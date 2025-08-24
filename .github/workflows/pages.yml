@@ -1,0 +1,33 @@
+name: Deploy static site to Pages
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # （必要ならここでビルド）
+      # - run: npm ci && npm run build
+      # - uses: actions/upload-pages-artifact@v3
+      #   with:
+      #     path: ./dist   # ←ビルド出力先
+
+      # ビルド不要ならリポジトリ直下をそのまま公開
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - uses: actions/deploy-pages@v4
