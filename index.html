@@ -1,14 +1,15 @@
+<!-- index.html（差分のポイント：カードが detail へ飛ぶ・DLボタンは削除） -->
 <!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Free Game Materials</title>
-  <meta name="description" content="ゲーム向けのフリー画像素材集（商用可/クレジット不要※設定による）">
+  <meta name="description" content="ゲーム向けのフリー画像素材集">
   <link rel="icon" href="data:," />
   <style>
     :root { --max:1200px; --gap:12px; }
-    body { margin:0; font:16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    body { margin:0; font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif; }
     header { border-bottom:1px solid #eee; }
     .wrap { max-width:var(--max); margin:auto; padding:16px; }
     h1 { font-size:22px; margin:0 0 8px; }
@@ -18,12 +19,10 @@
     .tag { padding:6px 10px; border:1px solid #ddd; border-radius:999px; cursor:pointer; user-select:none; font-size:14px; }
     .tag.active { background:#f0f0f0; }
     .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:var(--gap); }
-    .card { border:1px solid #eee; border-radius:12px; overflow:hidden; background:#fff; display:flex; flex-direction:column; }
+    .card { border:1px solid #eee; border-radius:12px; overflow:hidden; background:#fff; display:flex; flex-direction:column; text-decoration:none; color:inherit; }
     .thumb { aspect-ratio: 16/9; object-fit:cover; width:100%; display:block; }
     .meta { padding:10px; display:flex; flex-direction:column; gap:6px; }
     .meta small { color:#666; }
-    .actions { margin-top:auto; padding:10px; display:flex; gap:8px; }
-    .btn { flex:1; text-align:center; padding:8px 10px; border:1px solid #ddd; border-radius:8px; text-decoration:none; }
     footer { border-top:1px solid #eee; margin-top:20px; }
   </style>
 </head>
@@ -47,7 +46,7 @@
 </div></main>
 
 <footer><div class="wrap">
-  <small>© 2025 Free Game Materials · ライセンスは各素材の表記に従います。</small>
+  <small>© 2025 Free Game Materials</small>
 </div></footer>
 
 <script>
@@ -56,19 +55,18 @@
   const data = await res.json();
   let items = data.items || [];
 
-  // カテゴリ & タグのUIを構築
   const cats = Array.from(new Set(items.map(x => x.category))).sort();
   const tags = Array.from(new Set(items.flatMap(x => x.tags))).sort();
 
   const catSel = document.getElementById("cat");
-  cats.forEach(c => { const o = document.createElement("option"); o.value=c; o.textContent=c; catSel.appendChild(o); });
+  cats.forEach(c => { const o=document.createElement("option"); o.value=c; o.textContent=c; catSel.appendChild(o); });
 
   const tagbar = document.getElementById("tagbar");
   const activeTags = new Set();
   tags.forEach(t => {
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "tag"; b.textContent = t;
-    b.onclick = () => { b.classList.toggle("active"); activeTags.has(t) ? activeTags.delete(t) : activeTags.add(t); render(); };
+    const b=document.createElement("button");
+    b.type="button"; b.className="tag"; b.textContent=t;
+    b.onclick=()=>{ b.classList.toggle("active"); activeTags.has(t)?activeTags.delete(t):activeTags.add(t); render(); };
     tagbar.appendChild(b);
   });
 
@@ -89,25 +87,22 @@
     const kw = q.value.trim().toLowerCase();
     const kwok = !kw || [x.title, x.category, ...(x.tags||[])].join(" ").toLowerCase().includes(kw);
     const catok = !catSel.value || x.category === catSel.value;
-    const tagok = activeTags.size === 0 || [...activeTags].every(t => x.tags.includes(t));
+    const tagok = activeTags.size===0 || [...activeTags].every(t => x.tags.includes(t));
     return kwok && catok && tagok;
   }
 
   function card(t){
-    const el = document.createElement("div");
-    el.className = "card";
-    el.innerHTML = `
+    const a = document.createElement("a");
+    a.className = "card";
+    a.href = `items/${t.slug}/`;     // ← 詳細ページへ
+    a.innerHTML = `
       <img class="thumb" loading="lazy" src="${t.thumb}" alt="${t.title}">
       <div class="meta">
         <strong>${t.title}</strong>
         <small>${t.category} · ${t.tags.join(", ")}</small>
         <small>${t.width || "?"}×${t.height || "?"} · ${t.license}</small>
-      </div>
-      <div class="actions">
-        <a class="btn" href="${t.file}" download>Download</a>
-        <a class="btn" href="${t.file}" target="_blank" rel="noopener">Open</a>
       </div>`;
-    return el;
+    return a;
   }
 
   function render(){
@@ -115,7 +110,6 @@
     grid.innerHTML = "";
     sortItems(items.filter(match)).forEach(x => grid.appendChild(card(x)));
   }
-
   render();
 })();
 </script>
