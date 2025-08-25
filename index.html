@@ -4,8 +4,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>フリー画像素材集</title>
-  <meta name="description" content="ゲーム向けのフリー画像素材集">
+  <title>フリー画像素材集 | ゲーム開発向け高品質素材</title>
+  <meta name="description" content="ゲーム開発に最適なフリー画像素材集。UI、背景、キャラクターなど豊富なカテゴリの高品質素材を無料で提供。商用利用可能で即ダウンロード可能です。">
+  <meta name="keywords" content="フリー素材,ゲーム素材,画像素材,UI素材,背景素材,無料ダウンロード,商用利用可能">
+  <meta name="author" content="Free Game Materials">
+  <meta property="og:title" content="フリー画像素材集 | ゲーム開発向け高品質素材">
+  <meta property="og:description" content="ゲーム開発に最適なフリー画像素材集。UI、背景、キャラクターなど豊富なカテゴリの高品質素材を無料で提供。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yohyama0216.github.io/free-image-material/">
+  <meta property="og:image" content="https://yohyama0216.github.io/free-image-material/assets/og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="フリー画像素材集 | ゲーム開発向け高品質素材">
+  <meta name="twitter:description" content="ゲーム開発に最適なフリー画像素材集。UI、背景、キャラクターなど豊富なカテゴリの高品質素材を無料で提供。">
+  <meta name="twitter:image" content="https://yohyama0216.github.io/free-image-material/assets/og-image.jpg">
+  <link rel="canonical" href="https://yohyama0216.github.io/free-image-material/">
   <link rel="icon" href="data:," />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <style>
@@ -14,12 +26,23 @@
     .card { text-decoration: none; color: inherit; }
     .card:hover { text-decoration: none; color: inherit; }
     .thumb { aspect-ratio: 16/9; object-fit: cover; width: 100%; }
+    .seo-panel { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin: 20px 0; }
+    .seo-item { margin: 8px 0; }
+    .seo-good { color: #198754; }
+    .seo-warning { color: #fd7e14; }
+    .seo-error { color: #dc3545; }
+    .seo-toggle { cursor: pointer; background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin: 10px 0; }
   </style>
 </head>
 <body>
 <header class="border-bottom">
   <div class="container">
     <h1 class="h2 my-3">Free Game Materials</h1>
+    <button class="seo-toggle" onclick="toggleSEOPanel()">SEO情報を表示/非表示</button>
+    <div id="seo-panel" class="seo-panel" style="display: none;">
+      <h3>SEO分析結果</h3>
+      <div id="seo-results"></div>
+    </div>
     <div class="row g-2 mb-3">
       <div class="col-md-4">
         <input id="q" type="search" class="form-control" placeholder="キーワード検索（例：sky, ui, grass）">
@@ -54,6 +77,144 @@
 </footer>
 
 <script>
+// SEO分析機能
+function toggleSEOPanel() {
+  const panel = document.getElementById('seo-panel');
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+    analyzeSEO();
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+function analyzeSEO() {
+  const results = [];
+  
+  // タイトルタグチェック
+  const title = document.title;
+  if (title) {
+    const titleLength = title.length;
+    if (titleLength >= 30 && titleLength <= 60) {
+      results.push({ type: 'good', text: `✓ タイトル長: ${titleLength}文字 (適切)` });
+    } else if (titleLength < 30) {
+      results.push({ type: 'warning', text: `⚠ タイトル長: ${titleLength}文字 (短すぎます。30-60文字推奨)` });
+    } else {
+      results.push({ type: 'warning', text: `⚠ タイトル長: ${titleLength}文字 (長すぎます。30-60文字推奨)` });
+    }
+  } else {
+    results.push({ type: 'error', text: '✗ タイトルタグが見つかりません' });
+  }
+  
+  // メタディスクリプションチェック
+  const description = document.querySelector('meta[name="description"]');
+  if (description) {
+    const descLength = description.content.length;
+    if (descLength >= 120 && descLength <= 160) {
+      results.push({ type: 'good', text: `✓ メタディスクリプション長: ${descLength}文字 (適切)` });
+    } else if (descLength < 120) {
+      results.push({ type: 'warning', text: `⚠ メタディスクリプション長: ${descLength}文字 (短すぎます。120-160文字推奨)` });
+    } else {
+      results.push({ type: 'warning', text: `⚠ メタディスクリプション長: ${descLength}文字 (長すぎます。120-160文字推奨)` });
+    }
+  } else {
+    results.push({ type: 'error', text: '✗ メタディスクリプションが見つかりません' });
+  }
+  
+  // H1タグチェック
+  const h1Tags = document.querySelectorAll('h1');
+  if (h1Tags.length === 1) {
+    results.push({ type: 'good', text: '✓ H1タグが1つ設定されています' });
+  } else if (h1Tags.length === 0) {
+    results.push({ type: 'error', text: '✗ H1タグが見つかりません' });
+  } else {
+    results.push({ type: 'warning', text: `⚠ H1タグが${h1Tags.length}個あります (1個推奨)` });
+  }
+  
+  // 画像のaltチェック
+  const images = document.querySelectorAll('img');
+  const imagesWithoutAlt = Array.from(images).filter(img => !img.alt || img.alt.trim() === '');
+  if (imagesWithoutAlt.length === 0 && images.length > 0) {
+    results.push({ type: 'good', text: `✓ 全ての画像(${images.length}個)にalt属性が設定されています` });
+  } else if (imagesWithoutAlt.length > 0) {
+    results.push({ type: 'warning', text: `⚠ ${imagesWithoutAlt.length}個の画像にalt属性がありません` });
+  }
+  
+  // OGタグチェック
+  const ogTags = ['og:title', 'og:description', 'og:type', 'og:url', 'og:image'];
+  const missingOgTags = ogTags.filter(tag => !document.querySelector(`meta[property="${tag}"]`));
+  if (missingOgTags.length === 0) {
+    results.push({ type: 'good', text: '✓ 基本的なOGタグが全て設定されています' });
+  } else {
+    results.push({ type: 'warning', text: `⚠ 不足しているOGタグ: ${missingOgTags.join(', ')}` });
+  }
+  
+  // Twitter Cardチェック
+  const twitterCard = document.querySelector('meta[name="twitter:card"]');
+  if (twitterCard) {
+    results.push({ type: 'good', text: '✓ Twitter Cardが設定されています' });
+  } else {
+    results.push({ type: 'warning', text: '⚠ Twitter Cardが設定されていません' });
+  }
+  
+  // Canonicalタグチェック
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) {
+    results.push({ type: 'good', text: '✓ Canonicalタグが設定されています' });
+  } else {
+    results.push({ type: 'warning', text: '⚠ Canonicalタグが設定されていません' });
+  }
+  
+  // 構造化データのチェック（JSON-LD）
+  const jsonLd = document.querySelector('script[type="application/ld+json"]');
+  if (jsonLd) {
+    results.push({ type: 'good', text: '✓ 構造化データ(JSON-LD)が設定されています' });
+  } else {
+    results.push({ type: 'warning', text: '⚠ 構造化データ(JSON-LD)が設定されていません' });
+  }
+  
+  // ページ読み込み時間のチェック（パフォーマンス）
+  if (window.performance && window.performance.timing) {
+    const loadTime = window.performance.timing.loadEventEnd - window.performance.timing.navigationStart;
+    if (loadTime < 3000) {
+      results.push({ type: 'good', text: `✓ ページ読み込み時間: ${Math.round(loadTime)}ms (良好)` });
+    } else {
+      results.push({ type: 'warning', text: `⚠ ページ読み込み時間: ${Math.round(loadTime)}ms (改善推奨)` });
+    }
+  }
+  
+  // 外部リンクのチェック
+  const externalLinks = Array.from(document.querySelectorAll('a[href^="http"]')).filter(link => 
+    !link.href.includes(window.location.hostname)
+  );
+  const linksWithoutNofollow = externalLinks.filter(link => 
+    !link.rel.includes('nofollow') && !link.rel.includes('noopener')
+  );
+  if (linksWithoutNofollow.length === 0 && externalLinks.length > 0) {
+    results.push({ type: 'good', text: '✓ 外部リンクに適切なrel属性が設定されています' });
+  } else if (linksWithoutNofollow.length > 0) {
+    results.push({ type: 'warning', text: `⚠ ${linksWithoutNofollow.length}個の外部リンクにrel="nofollow noopener"の設定を検討してください` });
+  }
+  
+  // 結果を表示
+  const resultsContainer = document.getElementById('seo-results');
+  resultsContainer.innerHTML = results.map(result => 
+    `<div class="seo-item seo-${result.type}">${result.text}</div>`
+  ).join('');
+  
+  // サマリーを追加
+  const goodCount = results.filter(r => r.type === 'good').length;
+  const warningCount = results.filter(r => r.type === 'warning').length;
+  const errorCount = results.filter(r => r.type === 'error').length;
+  
+  const summary = `
+    <div class="seo-item" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #dee2e6;">
+      <strong>SEOスコア: ${goodCount}個の項目が良好, ${warningCount}個の改善点, ${errorCount}個の問題</strong>
+    </div>
+  `;
+  resultsContainer.innerHTML += summary;
+}
+
 (async function(){
   const res = await fetch("assets.json");
   const data = await res.json();
@@ -102,7 +263,7 @@
     a.className = "card h-100";
     a.href = `items/${t.slug}/`;     // ← 詳細ページへ
     a.innerHTML = `
-      <img class="thumb card-img-top" loading="lazy" src="${t.thumb}" alt="${t.title}">
+      <img class="thumb card-img-top" loading="lazy" src="${t.thumb}" alt="${t.title} - ${t.category}素材画像">
       <div class="card-body">
         <h5 class="card-title">${t.title}</h5>
         <p class="card-text">
@@ -118,6 +279,12 @@
     const grid = document.getElementById("grid");
     grid.innerHTML = "";
     sortItems(items.filter(match)).forEach(x => grid.appendChild(card(x)));
+    
+    // SEOパネルが表示されている場合は再分析
+    const seoPanel = document.getElementById('seo-panel');
+    if (seoPanel.style.display !== 'none') {
+      setTimeout(analyzeSEO, 100); // DOM更新後に実行
+    }
   }
   render();
 })();
