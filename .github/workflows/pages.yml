@@ -20,20 +20,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          php-version: '8.2'
-          extensions: gd, json
-          ini-values: memory_limit=512M
+          node-version: "20"
 
-      - name: Verify PHP and extensions
-        run: |
-          php --version
-          php -m | grep -E "(gd|json)"
+      - name: Install deps (sharp only)
+        run: npm i sharp
 
       - name: Generate thumbnails & assets.json & sitemap
-        run: php scripts/build-index.php
+        run: node scripts/build-index.mjs
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
