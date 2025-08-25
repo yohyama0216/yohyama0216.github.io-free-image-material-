@@ -2,35 +2,69 @@
 import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
-import { ASSETS_DIR } from "./config.mjs";
+import { ASSETS_DIR, ROOT } from "./config.mjs";
 
-/**
- * ファイル監視機能付きの開発用ビルダー
+/**// 使用方法の表示
+function showUsage() {
+  console.log(`
+🚀 Enhanced Build Watcher for Free Image Materials
+
+Usage:
+  node scripts/build-watcher.mjs [command]
+
+Commands:
+  watch     Start comprehensive file watcher (default)
+  build     Run single incremental build
+  full      Run full build (ignores cache)
+
+Examples:
+  node scripts/build-watcher.mjs          # Start watching all files
+  node scripts/build-watcher.mjs watch    # Start comprehensive watching  
+  node scripts/build-watcher.mjs build    # Single incremental build
+  node scripts/build-watcher.mjs full     # Full rebuild
+
+Monitoring:
+  📂 Images:     assets/**/*.{jpg,jpeg,png,webp}
+  🎨 Templates:  index.html, scripts/html-generator.mjs, scripts/config.mjs
+  ⚙️  Scripts:   scripts/**/*.mjs
+`);
+}ダー
  */
 class BuildWatcher {
   constructor() {
     this.isBuilding = false;
     this.buildQueue = new Set();
     this.debounceTimer = null;
+    this.watchers = [];
   }
   
   /**
    * ビルドを実行
    */
-  async runBuild() {
+  async runBuild(triggerType = 'auto') {
     if (this.isBuilding) {
       console.log("Build already in progress, queuing...");
       return;
     }
     
     this.isBuilding = true;
-    console.log(`\n🔨 Starting incremental build... (${new Date().toLocaleTimeString()})`);
+    console.log(`\n🔨 Starting ${triggerType} build... (${new Date().toLocaleTimeString()})`);
     
     try {
-      execSync('node scripts/incremental-build.mjs', { 
-        stdio: 'inherit',
-        cwd: process.cwd()
-      });
+      if (triggerType === 'template') {
+        // テンプレート変更時は増分ビルドで詳細ページ再生成
+        console.log("🎨 Template changes detected, regenerating detail pages...");
+        execSync('node scripts/incremental-build.mjs --force-templates', { 
+          stdio: 'inherit',
+          cwd: process.cwd()
+        });
+      } else {
+        // 通常の増分ビルド
+        execSync('node scripts/incremental-build.mjs', { 
+          stdio: 'inherit',
+          cwd: process.cwd()
+        });
+      }
       console.log("✅ Build completed successfully");
     } catch (error) {
       console.error("❌ Build failed:", error.message);
@@ -48,7 +82,7 @@ class BuildWatcher {
   /**
    * デバウンス付きビルド実行
    */
-  debouncedBuild(changedFile) {
+  debouncedBuild(changedFile, buildType = 'auto') {
     console.log(`📁 File changed: ${path.relative(process.cwd(), changedFile)}`);
     
     if (this.debounceTimer) {
@@ -56,23 +90,17 @@ class BuildWatcher {
     }
     
     this.debounceTimer = setTimeout(() => {
-      this.runBuild();
+      this.runBuild(buildType);
     }, 500); // 500ms待機
   }
   
   /**
-   * ファイル監視開始
+   * assetsディレクトリの監視
    */
-  startWatching() {
-    console.log("👀 Watching for changes in assets directory...");
-    console.log(`📂 Monitoring: ${ASSETS_DIR}`);
-    console.log("Press Ctrl+C to stop\n");
+  watchAssets() {
+    console.log(`📂 Monitoring assets: ${ASSETS_DIR}`);
     
-    // 初回ビルド
-    this.runBuild();
-    
-    // ファイル監視
-    const watcher = fs.watch(ASSETS_DIR, { recursive: true }, (eventType, filename) => {
+    const assetsWatcher = fs.watch(ASSETS_DIR, { recursive: true }, (eventType, filename) => {
       if (!filename) return;
       
       const fullPath = path.join(ASSETS_DIR, filename);
@@ -88,21 +116,83 @@ class BuildWatcher {
       // ファイルの存在確認（削除の場合もあるため）
       fs.access(fullPath, fs.constants.F_OK, (err) => {
         if (err) {
-          // ファイルが削除された場合
-          console.log(`🗑️  File deleted: ${filename}`);
+          console.log(`🗑️  Image deleted: ${filename}`);
         } else {
-          // ファイルが追加/変更された場合
-          console.log(`${eventType === 'rename' ? '📝' : '✏️'} File ${eventType}: ${filename}`);
+          console.log(`${eventType === 'rename' ? '📝' : '✏️'} Image ${eventType}: ${filename}`);
         }
         
-        this.debouncedBuild(fullPath);
+        this.debouncedBuild(fullPath, 'image');
       });
     });
     
+    this.watchers.push(assetsWatcher);
+  }
+  
+  /**
+   * テンプレートファイルの監視
+   */
+  watchTemplates() {
+    const templateFiles = [
+      path.join(ROOT, 'index.html'),
+      path.join(ROOT, 'scripts', 'html-generator.mjs'),
+      path.join(ROOT, 'scripts', 'config.mjs')
+    ];
+    
+    console.log(`🎨 Monitoring templates:`);
+    templateFiles.forEach(file => {
+      if (fs.existsSync(file)) {
+        console.log(`   - ${path.relative(ROOT, file)}`);
+        
+        const watcher = fs.watch(file, (eventType, filename) => {
+          console.log(`🎨 Template ${eventType}: ${path.relative(ROOT, file)}`);
+          this.debouncedBuild(file, 'template');
+        });
+        
+        this.watchers.push(watcher);
+      }
+    });
+  }
+  
+  /**
+   * scriptsディレクトリの監視（ビルドスクリプト変更時）
+   */
+  watchScripts() {
+    const scriptsDir = path.join(ROOT, 'scripts');
+    console.log(`⚙️  Monitoring scripts: ${scriptsDir}`);
+    
+    const scriptsWatcher = fs.watch(scriptsDir, (eventType, filename) => {
+      if (!filename || !filename.endsWith('.mjs')) return;
+      
+      // 自分自身（build-watcher.mjs）は除外
+      if (filename === 'build-watcher.mjs') return;
+      
+      const fullPath = path.join(scriptsDir, filename);
+      console.log(`⚙️  Script ${eventType}: ${filename}`);
+      this.debouncedBuild(fullPath, 'script');
+    });
+    
+    this.watchers.push(scriptsWatcher);
+  }
+  
+  /**
+   * 全ファイル監視開始
+   */
+  startWatching() {
+    console.log("👀 Starting comprehensive file watcher...");
+    console.log("Press Ctrl+C to stop\n");
+    
+    // 各種ファイル監視開始
+    this.watchAssets();
+    this.watchTemplates();
+    this.watchScripts();
+    
+    // 初回ビルド
+    this.runBuild('initial');
+    
     // Ctrl+Cでの終了処理
     process.on('SIGINT', () => {
-      console.log('\n👋 Stopping file watcher...');
-      watcher.close();
+      console.log('\n👋 Stopping file watchers...');
+      this.watchers.forEach(watcher => watcher.close());
       process.exit(0);
     });
   }
@@ -111,21 +201,26 @@ class BuildWatcher {
 // 使用方法の表示
 function showUsage() {
   console.log(`
-🚀 Build Watcher for Free Image Materials
+🚀 Enhanced Build Watcher for Free Image Materials
 
 Usage:
   node scripts/build-watcher.mjs [command]
 
 Commands:
-  watch     Start file watcher (default)
+  watch     Start comprehensive file watcher (default)
   build     Run single incremental build
   full      Run full build (ignores cache)
 
 Examples:
-  node scripts/build-watcher.mjs          # Start watching
-  node scripts/build-watcher.mjs watch    # Start watching  
-  node scripts/build-watcher.mjs build    # Single build
+  node scripts/build-watcher.mjs          # Start watching all files
+  node scripts/build-watcher.mjs watch    # Start comprehensive watching  
+  node scripts/build-watcher.mjs build    # Single incremental build
   node scripts/build-watcher.mjs full     # Full rebuild
+
+Monitoring:
+  📂 Images:     assets/**/*.{jpg,jpeg,png,webp}
+  🎨 Templates:  index.html, scripts/html-generator.mjs, scripts/config.mjs
+  ⚙️  Scripts:   scripts/**/*.mjs
 `);
 }
 

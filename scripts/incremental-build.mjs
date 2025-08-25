@@ -163,6 +163,10 @@ async function cleanupDeletedItems(deletedFiles) {
 async function incrementalBuild() {
   console.log("Starting incremental build...");
   
+  // コマンドライン引数をチェック
+  const args = process.argv.slice(2);
+  const forceTemplateRegen = args.includes('--force-templates');
+  
   try {
     // 初期設定
     await fs.writeFile(path.join(ROOT, ".nojekyll"), "");
@@ -184,6 +188,35 @@ async function incrementalBuild() {
     console.log(`  Modified: ${changes.modified.length}`);
     console.log(`  Deleted: ${changes.deleted.length}`);
     console.log(`  Unchanged: ${changes.unchanged.length}`);
+    
+    // テンプレート強制再生成の場合
+    if (forceTemplateRegen) {
+      console.log("🎨 Force regenerating all detail pages due to template changes...");
+      // 全アイテムの詳細ページを再生成
+      const allItems = [...changes.unchanged.map(f => f.item), ...cache.items].filter(Boolean);
+      for (const item of allItems) {
+        if (item && item.slug) {
+          await writeDetailPage(item);
+          console.log(`Regenerated: ${item.title}`);
+        }
+      }
+      
+      // assets.json と sitemap.xml も更新
+      const payload = { 
+        updatedAt: new Date().toISOString(), 
+        items: allItems 
+      };
+      await fs.writeFile(OUT_JSON, JSON.stringify(payload, null, 2));
+      
+      const baseUrl = getBaseUrl();
+      const routes = generateRoutes(baseUrl, allItems);
+      const sitemapXML = generateSitemapXML(baseUrl, routes);
+      await fs.writeFile(OUT_SITEMAP, sitemapXML);
+      
+      console.log(`\n=== Template Regeneration Complete ===`);
+      console.log(`Regenerated ${allItems.length} detail pages`);
+      return;
+    }
     
     // 変更がない場合はスキップ
     if (changes.added.length === 0 && changes.modified.length === 0 && changes.deleted.length === 0) {
