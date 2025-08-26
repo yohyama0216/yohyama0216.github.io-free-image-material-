@@ -26,6 +26,13 @@
     .card { text-decoration: none; color: inherit; }
     .card:hover { text-decoration: none; color: inherit; }
     .thumb { aspect-ratio: 16/9; object-fit: cover; width: 100%; }
+    .tag-cloud .tag { margin: 2px; transition: all 0.2s; }
+    .tag-cloud .tag:hover { transform: scale(1.05); }
+    .tag-freq-1 { font-size: 0.75rem; }
+    .tag-freq-2 { font-size: 0.875rem; }
+    .tag-freq-3 { font-size: 1rem; }
+    .tag-freq-4 { font-size: 1.125rem; }
+    .tag-freq-5 { font-size: 1.25rem; }
   </style>
 </head>
 <body>
@@ -36,20 +43,35 @@
       <div class="col-md-4">
         <input id="q" type="search" class="form-control" placeholder="キーワード検索（例：sky, ui, grass）">
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <select id="cat" class="form-select">
           <option value="">すべてのカテゴリ</option>
         </select>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <select id="sort" class="form-select">
           <option value="title">並び替え：タイトル</option>
           <option value="wdesc">並び替え：横幅（大→小）</option>
           <option value="wasc">並び替え：横幅（小→大）</option>
         </select>
       </div>
+      <div class="col-md-2">
+        <button id="clearTags" class="btn btn-outline-danger w-100" title="選択中のタグをクリア">
+          <span>🏷️</span> クリア
+        </button>
+      </div>
     </div>
-    <div id="tagbar" class="d-flex flex-wrap gap-2 mb-3"></div>
+    <div class="mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="mb-0">タグで絞り込み：</h6>
+        <small id="tagStats" class="text-muted"></small>
+      </div>
+      <div id="tagbar" class="d-flex flex-wrap gap-2 tag-cloud"></div>
+      <div id="selectedTags" class="mt-2" style="display: none;">
+        <small class="text-muted">選択中：</small>
+        <div id="selectedTagsList" class="d-inline-flex flex-wrap gap-1 ms-2"></div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -74,29 +96,99 @@
   const cats = Array.from(new Set(items.map(x => x.category))).sort();
   const tags = Array.from(new Set(items.flatMap(x => x.tags))).sort();
 
+  // タグの使用頻度を計算
+  const tagFreq = {};
+  items.forEach(item => {
+    item.tags.forEach(tag => {
+      tagFreq[tag] = (tagFreq[tag] || 0) + 1;
+    });
+  });
+
   const catSel = document.getElementById("cat");
   cats.forEach(c => { const o=document.createElement("option"); o.value=c; o.textContent=c; catSel.appendChild(o); });
 
   const tagbar = document.getElementById("tagbar");
   const activeTags = new Set();
-  tags.forEach(t => {
+  
+  // タグを頻度順でソート
+  const sortedTags = tags.sort((a, b) => tagFreq[b] - tagFreq[a]);
+  
+  sortedTags.forEach(t => {
     const b=document.createElement("button");
-    b.type="button"; b.className="tag btn btn-outline-secondary btn-sm"; b.textContent=t;
-    b.onclick=()=>{ b.classList.toggle("active"); activeTags.has(t)?activeTags.delete(t):activeTags.add(t); render(); };
+    const freq = tagFreq[t];
+    const maxFreq = Math.max(...Object.values(tagFreq));
+    const freqLevel = Math.min(5, Math.ceil((freq / maxFreq) * 5));
+    
+    b.type="button"; 
+    b.className=`tag btn btn-outline-secondary btn-sm tag-freq-${freqLevel}`; 
+    b.textContent=`${t} (${freq})`;
+    b.title=`${freq}個のアイテムにこのタグが使用されています`;
+    b.setAttribute("data-tag", t);
+    b.onclick=()=>{ 
+      b.classList.toggle("active"); 
+      activeTags.has(t) ? activeTags.delete(t) : activeTags.add(t); 
+      updateSelectedTags();
+      render(); 
+    };
     tagbar.appendChild(b);
   });
 
   const q = document.getElementById("q");
   const sortSel = document.getElementById("sort");
+  const clearTagsBtn = document.getElementById("clearTags");
+  
   q.addEventListener("input", render);
   catSel.addEventListener("change", render);
   sortSel.addEventListener("change", render);
+  
+  // タグクリア機能
+  clearTagsBtn.addEventListener("click", () => {
+    activeTags.clear();
+    document.querySelectorAll(".tag.active").forEach(tag => tag.classList.remove("active"));
+    updateSelectedTags();
+    render();
+  });
 
   function sortItems(arr){
     const v = sortSel.value;
     if (v === "wdesc") return arr.sort((a,b) => (b.width||0)-(a.width||0));
     if (v === "wasc") return arr.sort((a,b) => (a.width||0)-(b.width||0));
     return arr.sort((a,b) => a.title.localeCompare(b.title));
+  }
+
+  // 選択されたタグの表示を更新
+  function updateSelectedTags() {
+    const selectedDiv = document.getElementById("selectedTags");
+    const listDiv = document.getElementById("selectedTagsList");
+    const statsDiv = document.getElementById("tagStats");
+    
+    if (activeTags.size === 0) {
+      selectedDiv.style.display = "none";
+    } else {
+      selectedDiv.style.display = "block";
+      listDiv.innerHTML = "";
+      
+      [...activeTags].forEach(tag => {
+        const badge = document.createElement("span");
+        badge.className = "badge bg-primary";
+        badge.innerHTML = `${tag} <button type="button" class="btn-close btn-close-white" style="font-size:0.7em;" aria-label="Remove ${tag}"></button>`;
+        badge.querySelector(".btn-close").onclick = (e) => {
+          e.preventDefault();
+          activeTags.delete(tag);
+          document.querySelector(`[data-tag="${tag}"]`)?.classList.remove("active");
+          updateSelectedTags();
+          render();
+        };
+        listDiv.appendChild(badge);
+      });
+    }
+    
+    // タグ統計情報
+    const totalTags = tags.length;
+    const usedTags = activeTags.size;
+    statsDiv.textContent = usedTags > 0 ? 
+      `${usedTags}/${totalTags}個のタグで絞り込み中` : 
+      `全${totalTags}個のタグ`;
   }
 
   function match(x){
@@ -127,11 +219,48 @@
   }
 
   function render(){
+    const matched = items.filter(match);
+    const sorted = sortItems([...matched]);
+    
     const grid = document.getElementById("grid");
     grid.innerHTML = "";
-    sortItems(items.filter(match)).forEach(x => grid.appendChild(card(x)));
+    sorted.forEach(x => grid.appendChild(card(x)));
+    
+    // 検索結果の統計表示
+    const resultCount = matched.length;
+    const totalCount = items.length;
+    document.title = resultCount < totalCount ? 
+      `${resultCount}件の結果 - フリー画像素材集` : 
+      "フリー画像素材集 | ゲーム開発向け高品質素材";
+      
+    // ページ上部に結果数表示
+    let resultInfo = document.getElementById("resultInfo");
+    if (!resultInfo) {
+      resultInfo = document.createElement("div");
+      resultInfo.id = "resultInfo";
+      resultInfo.className = "alert alert-info mb-3";
+      grid.parentNode.insertBefore(resultInfo, grid);
+    }
+    
+    if (resultCount < totalCount) {
+      const filters = [];
+      if (q.value.trim()) filters.push(`キーワード「${q.value.trim()}」`);
+      if (catSel.value) filters.push(`カテゴリ「${catSel.value}」`);
+      if (activeTags.size > 0) filters.push(`タグ「${[...activeTags].join(", ")}」`);
+      
+      resultInfo.innerHTML = `
+        <strong>${resultCount}件</strong> の結果が見つかりました（全${totalCount}件中）
+        ${filters.length > 0 ? `<br><small>絞り込み条件: ${filters.join(" + ")}</small>` : ""}
+      `;
+      resultInfo.style.display = "block";
+    } else {
+      resultInfo.style.display = "none";
+    }
+    
+    updateSelectedTags();
   }
   render();
+  updateSelectedTags(); // 初期状態のタグ統計を表示
 })();
 </script>
 </body>
