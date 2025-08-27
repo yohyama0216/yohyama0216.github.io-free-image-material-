@@ -1,0 +1,64 @@
+{
+  "fileNamePatterns": {
+    "button": ["ui", "button"],
+    "menu": ["ui", "menu"],
+    "icon": ["ui"],
+    "sky": ["nature", "sky", "outdoor"],
+    "grass": ["nature", "grass", "green", "outdoor"],
+    "water": ["nature", "water", "blue"],
+    "house": ["building", "house", "indoor"],
+    "castle": ["building", "castle", "medieval"],
+    "room": ["indoor"],
+    "red": ["red"],
+    "blue": ["blue"],
+    "green": ["green"],
+    "cute": ["cute"],
+    "dark": ["dark"],
+    "bright": ["bright"]
+  },
+  "directoryPatterns": {
+    "ui": ["ui"],
+    "landscape": ["nature", "outdoor"],
+    "character": ["character"],
+    "building": ["building"],
+    "interior": ["indoor"],
+    "nature": ["nature", "outdoor"]
+  },
+  "categoryTags": {
+    "ui": ["ui"],
+    "landscape": ["nature", "outdoor"],
+    "character": ["character"],
+    "building": ["building", "architecture"],
+    "item": ["object"]
+  },
+  "autoRules": [
+    {
+      "condition": {
+        "type": "filename_contains",
+        "value": "medieval"
+      },
+      "tags": ["medieval"]
+    },
+    {
+      "condition": {
+        "type": "filename_contains",
+        "value": "modern"
+      },
+      "tags": ["modern"]
+    },
+    {
+      "condition": {
+        "type": "directory_path",
+        "value": "*/indoor/*"
+      },
+      "tags": ["indoor"]
+    },
+    {
+      "condition": {
+        "type": "directory_path",
+        "value": "*/outdoor/*"
+      },
+      "tags": ["outdoor"]
+    }
+  ]
+}

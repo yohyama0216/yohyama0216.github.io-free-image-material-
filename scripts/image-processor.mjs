@@ -6,15 +6,49 @@ import { ASSETS_DIR, THUMBS_DIR, THUMBNAIL_WIDTH, THUMBNAIL_QUALITY, DEFAULT_LIC
 import { toSlug, ensureDir, formatSize } from "./utils.mjs";
 
 /**
+ * メタデータファイルを読み込み
+ */
+async function loadMetadata(imagePath) {
+  const metaPath = imagePath.replace(/\.(jpe?g|png|gif|webp)$/i, '.meta.json');
+  try {
+    const metaContent = await fs.readFile(metaPath, 'utf-8');
+    return JSON.parse(metaContent);
+  } catch (error) {
+    return {}; // メタデータファイルがない場合は空オブジェクト
+  }
+}
+
+/**
+ * メタデータファイルを読み込み
+ */
+async function loadMetadata(imagePath) {
+  const metaPath = imagePath.replace(/\.(jpe?g|png|gif|webp)$/i, '.meta.json');
+  try {
+    const metaContent = await fs.readFile(metaPath, 'utf-8');
+    return JSON.parse(metaContent);
+  } catch (error) {
+    return {}; // メタデータファイルがない場合は空オブジェクト
+  }
+}
+
+/**
  * 画像ファイルを処理してアイテム情報を生成
  */
 export async function processImage(fullPath, slugGenerator) {
   const relFromAssets = path.relative(ASSETS_DIR, fullPath).split(path.sep).join("/");
   const base = path.parse(relFromAssets).name;
-  const title = base.replace(/[-_]+/g, " ").trim();
+  
+  // メタデータファイルを読み込み
+  const metadata = await loadMetadata(fullPath);
+  
+  const title = metadata.title || base.replace(/[-_]+/g, " ").trim();
   const parts = relFromAssets.split("/");
-  const category = parts[0] || "misc";
-  const tags = Array.from(new Set(parts.slice(0, -1).filter(Boolean)));
+  const category = metadata.category || parts[0] || "misc";
+  
+  // タグの統合（フォルダ構造 + メタデータ）
+  const folderTags = Array.from(new Set(parts.slice(0, -1).filter(Boolean)));
+  const metaTags = metadata.tags || [];
+  const tags = Array.from(new Set([...folderTags, ...metaTags]));
 
   // スラグ生成
   const slugBase = toSlug(`${category}-${base}`);
@@ -43,6 +77,7 @@ export async function processImage(fullPath, slugGenerator) {
     id: base,
     slug,
     title,
+    description: metadata.description || `${title} - ${category}素材画像`,
     category,
     tags,
     width: meta.width ?? null,
@@ -50,7 +85,9 @@ export async function processImage(fullPath, slugGenerator) {
     bytes,
     file: `assets/${relFromAssets}`,
     thumb: thumbRel,
-    license: DEFAULT_LICENSE
+    license: metadata.license || DEFAULT_LICENSE,
+    author: metadata.author || null,
+    keywords: metadata.keywords || []
   };
 
   return item;
