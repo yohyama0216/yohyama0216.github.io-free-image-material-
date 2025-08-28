@@ -22,58 +22,158 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 <body>
-<header class="border-bottom">
+<!-- ヒーローセクション -->
+<section class="bg-primary text-white py-5">
   <div class="container">
-    <h1 class="h2 my-3">Free Game Materials</h1>
-    <div class="row g-2 mb-3">
-      <div class="col-md-4">
-        <input id="q" type="search" class="form-control" placeholder="キーワード検索（例：sky, ui, grass）">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <h1 class="display-4 fw-bold mb-3">Free Game Materials</h1>
+        <p class="lead mb-4">ゲーム開発に最適なフリー画像素材集。UI、背景、キャラクターなど豊富なカテゴリの高品質素材を無料で提供。商用利用可能で即ダウンロード可能です。</p>
+        <div class="d-flex gap-3">
+          <span class="badge bg-light text-dark px-3 py-2">商用利用OK</span>
+          <span class="badge bg-light text-dark px-3 py-2">高品質</span>
+          <span class="badge bg-light text-dark px-3 py-2">即ダウンロード</span>
+        </div>
+      </div>
+      <div class="col-lg-6 text-center">
+        <div class="bg-white bg-opacity-10 rounded p-4">
+          <h3 class="h5 mb-3">🎮 素材を探す</h3>
+          <div class="input-group mb-3">
+            <input id="heroSearch" type="search" class="form-control" placeholder="キーワードで検索...">
+            <button class="btn btn-light" type="button" onclick="performHeroSearch()">
+              <i class="bi bi-search"></i> 検索
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 統計情報 -->
+<section class="py-4 bg-light">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-3">
+        <div class="h4 fw-bold text-primary" id="totalItems">-</div>
+        <div class="text-muted">総素材数</div>
       </div>
       <div class="col-md-3">
+        <div class="h4 fw-bold text-primary" id="totalCategories">-</div>
+        <div class="text-muted">カテゴリ</div>
+      </div>
+      <div class="col-md-3">
+        <div class="h4 fw-bold text-primary" id="totalTags">-</div>
+        <div class="text-muted">タグ</div>
+      </div>
+      <div class="col-md-3">
+        <div class="h4 fw-bold text-primary">CC0</div>
+        <div class="text-muted">ライセンス</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 検索・フィルター -->
+<section class="py-4 border-bottom">
+  <div class="container">
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">🔍 キーワード検索</label>
+        <input id="q" type="search" class="form-control" placeholder="例：sky, ui, grass">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">📁 カテゴリ</label>
         <select id="cat" class="form-select">
           <option value="">すべてのカテゴリ</option>
         </select>
       </div>
       <div class="col-md-3">
+        <label class="form-label fw-semibold">📊 並び替え</label>
         <select id="sort" class="form-select">
-          <option value="title">並び替え：タイトル</option>
-          <option value="wdesc">並び替え：横幅（大→小）</option>
-          <option value="wasc">並び替え：横幅（小→大）</option>
+          <option value="title">タイトル順</option>
+          <option value="wdesc">サイズ大→小</option>
+          <option value="wasc">サイズ小→大</option>
         </select>
       </div>
       <div class="col-md-2">
+        <label class="form-label fw-semibold">🏷️ タグ</label>
         <button id="clearTags" class="btn btn-outline-danger w-100" title="選択中のタグをクリア">
-          <span>🏷️</span> クリア
+          クリア
         </button>
       </div>
     </div>
-    <div class="mb-3">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="mb-0">タグで絞り込み：</h6>
-        <small id="tagStats" class="text-muted"></small>
+    <!-- タグクラウド -->
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h6 class="mb-0 fw-semibold">🏷️ タグで絞り込み</h6>
+          <small id="tagStats" class="text-muted"></small>
+        </div>
       </div>
-      <div id="tagbar" class="d-flex flex-wrap gap-2"></div>
-      <div id="selectedTags" class="mt-2" style="display: none;">
-        <small class="text-muted">選択中：</small>
-        <div id="selectedTagsList" class="d-inline-flex flex-wrap gap-1 ms-2"></div>
+      <div class="card-body">
+        <div id="tagbar" class="d-flex flex-wrap gap-2"></div>
+        <div id="selectedTags" class="mt-3 p-2 bg-light rounded" style="display: none;">
+          <small class="text-muted fw-semibold">選択中のタグ：</small>
+          <div id="selectedTagsList" class="d-inline-flex flex-wrap gap-1 ms-2"></div>
+        </div>
       </div>
     </div>
   </div>
-</header>
+</section>
 
-<main>
+<main class="py-4">
   <div class="container">
+    <!-- 結果表示エリア -->
+    <div id="resultInfo" class="alert alert-info mb-4" style="display: none;"></div>
+    
+    <!-- 素材グリッド -->
     <div id="grid" class="row g-3"></div>
   </div>
 </main>
 
-<footer class="border-top mt-4">
-  <div class="container py-3">
-    <small class="text-muted">© 2025 Free Game Materials</small>
+<footer class="bg-dark text-white py-4 mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h5>Free Game Materials</h5>
+        <p class="text-muted">ゲーム開発に最適なフリー素材を提供しています。</p>
+      </div>
+      <div class="col-md-3">
+        <h6>利用について</h6>
+        <ul class="list-unstyled">
+          <li><small>✓ 商用利用可能</small></li>
+          <li><small>✓ クレジット不要</small></li>
+          <li><small>✓ 加工・改変OK</small></li>
+        </ul>
+      </div>
+      <div class="col-md-3">
+        <h6>カテゴリ</h6>
+        <div id="footerCategories" class="d-flex flex-wrap gap-1">
+          <!-- カテゴリがここに動的に追加される -->
+        </div>
+      </div>
+    </div>
+    <hr class="my-3">
+    <div class="text-center">
+      <small class="text-muted">© 2025 Free Game Materials. All rights reserved.</small>
+    </div>
   </div>
 </footer>
 
 <script>
+// ヒーロー検索機能
+function performHeroSearch() {
+  const heroInput = document.getElementById("heroSearch");
+  const mainInput = document.getElementById("q");
+  mainInput.value = heroInput.value;
+  
+  // 検索セクションまでスクロール
+  document.querySelector('main').scrollIntoView({ behavior: 'smooth' });
+  
+  // 検索を実行
+  render();
+}
 (async function(){
   const res = await fetch("assets.json");
   const data = await res.json();
@@ -81,6 +181,26 @@
 
   const cats = Array.from(new Set(items.map(x => x.category))).sort();
   const tags = Array.from(new Set(items.flatMap(x => x.tags))).sort();
+
+  // 統計情報を更新
+  document.getElementById("totalItems").textContent = items.length;
+  document.getElementById("totalCategories").textContent = cats.length;
+  document.getElementById("totalTags").textContent = tags.length;
+
+  // フッターのカテゴリを追加
+  const footerCats = document.getElementById("footerCategories");
+  cats.slice(0, 8).forEach(cat => {
+    const badge = document.createElement("span");
+    badge.className = "badge bg-secondary text-decoration-none";
+    badge.textContent = cat;
+    badge.style.cursor = "pointer";
+    badge.onclick = () => {
+      document.getElementById("cat").value = cat;
+      document.querySelector('main').scrollIntoView({ behavior: 'smooth' });
+      render();
+    };
+    footerCats.appendChild(badge);
+  });
 
   // タグの使用頻度を計算
   const tagFreq = {};
@@ -207,19 +327,37 @@
 
   function card(t){
     const div = document.createElement("div");
-    div.className = "col-md-4 col-lg-3";
+    div.className = "col-xl-3 col-lg-4 col-md-6";
     const a = document.createElement("a");
-    a.className = "card h-100 text-decoration-none text-body";
-    a.href = `items/${t.slug}/`;     // ← 詳細ページへ
+    a.className = "card h-100 text-decoration-none text-body shadow-sm";
+    a.href = `items/${t.slug}/`;
     a.innerHTML = `
-      <img class="card-img-top object-fit-cover" loading="lazy" src="${t.thumb}" alt="${t.title} - ${t.category}素材画像" style="height: 200px;">
+      <div class="position-relative">
+        <img class="card-img-top object-fit-cover" loading="lazy" src="${t.thumb}" alt="${t.title}" style="height: 220px;">
+        <div class="position-absolute top-0 end-0 m-2">
+          <span class="badge bg-primary">${t.category}</span>
+        </div>
+        <div class="position-absolute bottom-0 start-0 end-0 bg-gradient" style="background: linear-gradient(transparent, rgba(0,0,0,0.7)); height: 60px;"></div>
+        <div class="position-absolute bottom-0 start-0 p-2">
+          <small class="text-white fw-semibold">${t.width || "?"}×${t.height || "?"}</small>
+        </div>
+      </div>
       <div class="card-body">
-        <h5 class="card-title">${t.title}</h5>
-        <p class="card-text">
-          <small class="text-muted">${t.category} · ${t.tags.join(", ")}</small><br>
-          <small class="text-muted">${t.width || "?"}×${t.height || "?"} · ${t.license}</small>
-        </p>
+        <h6 class="card-title mb-2">${t.title}</h6>
+        <div class="d-flex flex-wrap gap-1 mb-2">
+          ${t.tags.slice(0, 3).map(tag => `<span class="badge bg-light text-dark">${tag}</span>`).join('')}
+          ${t.tags.length > 3 ? `<span class="badge bg-light text-muted">+${t.tags.length - 3}</span>` : ''}
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <small class="text-muted">${t.license}</small>
+          <small class="text-primary fw-semibold">詳細 →</small>
+        </div>
       </div>`;
+    
+    // ホバー効果
+    a.onmouseenter = () => a.classList.add("shadow");
+    a.onmouseleave = () => a.classList.remove("shadow");
+    
     div.appendChild(a);
     return div;
   }
@@ -239,14 +377,8 @@
       `${resultCount}件の結果 - フリー画像素材集` : 
       "フリー画像素材集 | ゲーム開発向け高品質素材";
       
-    // ページ上部に結果数表示
-    let resultInfo = document.getElementById("resultInfo");
-    if (!resultInfo) {
-      resultInfo = document.createElement("div");
-      resultInfo.id = "resultInfo";
-      resultInfo.className = "alert alert-info mb-3";
-      grid.parentNode.insertBefore(resultInfo, grid);
-    }
+    // 結果情報の表示
+    const resultInfo = document.getElementById("resultInfo");
     
     if (resultCount < totalCount) {
       const filters = [];
@@ -255,8 +387,11 @@
       if (activeTags.size > 0) filters.push(`タグ「${[...activeTags].join(", ")}」`);
       
       resultInfo.innerHTML = `
-        <strong>${resultCount}件</strong> の結果が見つかりました（全${totalCount}件中）
-        ${filters.length > 0 ? `<br><small>絞り込み条件: ${filters.join(" + ")}</small>` : ""}
+        <div class="d-flex align-items-center">
+          <i class="bi bi-funnel me-2"></i>
+          <strong>${resultCount}件</strong> の結果が見つかりました（全${totalCount}件中）
+          ${filters.length > 0 ? `<br><small class="ms-4">絞り込み条件: ${filters.join(" + ")}</small>` : ""}
+        </div>
       `;
       resultInfo.style.display = "block";
     } else {
