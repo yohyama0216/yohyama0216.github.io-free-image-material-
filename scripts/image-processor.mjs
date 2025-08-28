@@ -3,20 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 import { ASSETS_DIR, THUMBS_DIR, THUMBNAIL_WIDTH, THUMBNAIL_QUALITY, DEFAULT_LICENSE } from "./config.mjs";
-import { toSlug, ensureDir, formatSize } from "./utils.mjs";
-
-/**
- * メタデータファイルを読み込み
- */
-async function loadMetadata(imagePath) {
-  const metaPath = imagePath.replace(/\.(jpe?g|png|gif|webp)$/i, '.meta.json');
-  try {
-    const metaContent = await fs.readFile(metaPath, 'utf-8');
-    return JSON.parse(metaContent);
-  } catch (error) {
-    return {}; // メタデータファイルがない場合は空オブジェクト
-  }
-}
+import { toSlug, ensureDir } from "./utils.mjs";
 
 /**
  * メタデータファイルを読み込み
