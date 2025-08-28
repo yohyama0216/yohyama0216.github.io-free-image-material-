@@ -20,20 +20,6 @@
   <link rel="canonical" href="https://yohyama0216.github.io/free-image-material/">
   <link rel="icon" href="data:," />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <style>
-    .tag { cursor: pointer; user-select: none; }
-    .tag.active { background-color: #f0f0f0; }
-    .card { text-decoration: none; color: inherit; }
-    .card:hover { text-decoration: none; color: inherit; }
-    .thumb { aspect-ratio: 16/9; object-fit: cover; width: 100%; }
-    .tag-cloud .tag { margin: 2px; transition: all 0.2s; }
-    .tag-cloud .tag:hover { transform: scale(1.05); }
-    .tag-freq-1 { font-size: 0.75rem; }
-    .tag-freq-2 { font-size: 0.875rem; }
-    .tag-freq-3 { font-size: 1rem; }
-    .tag-freq-4 { font-size: 1.125rem; }
-    .tag-freq-5 { font-size: 1.25rem; }
-  </style>
 </head>
 <body>
 <header class="border-bottom">
@@ -66,7 +52,7 @@
         <h6 class="mb-0">タグで絞り込み：</h6>
         <small id="tagStats" class="text-muted"></small>
       </div>
-      <div id="tagbar" class="d-flex flex-wrap gap-2 tag-cloud"></div>
+      <div id="tagbar" class="d-flex flex-wrap gap-2"></div>
       <div id="selectedTags" class="mt-2" style="display: none;">
         <small class="text-muted">選択中：</small>
         <div id="selectedTagsList" class="d-inline-flex flex-wrap gap-1 ms-2"></div>
@@ -119,13 +105,26 @@
     const maxFreq = Math.max(...Object.values(tagFreq));
     const freqLevel = Math.min(5, Math.ceil((freq / maxFreq) * 5));
     
+    // Bootstrapのサイズクラスを使用
+    let sizeClass = "btn-sm";
+    if (freqLevel >= 4) sizeClass = "";  // 通常サイズ
+    else if (freqLevel >= 3) sizeClass = "btn-sm";
+    else sizeClass = "btn-sm";
+    
     b.type="button"; 
-    b.className=`tag btn btn-outline-secondary btn-sm tag-freq-${freqLevel}`; 
+    b.className=`btn btn-outline-secondary ${sizeClass} me-1 mb-1`; 
     b.textContent=`${t} (${freq})`;
     b.title=`${freq}個のアイテムにこのタグが使用されています`;
     b.setAttribute("data-tag", t);
     b.onclick=()=>{ 
-      b.classList.toggle("active"); 
+      b.classList.toggle("active");
+      if (b.classList.contains("active")) {
+        b.classList.remove("btn-outline-secondary");
+        b.classList.add("btn-secondary");
+      } else {
+        b.classList.remove("btn-secondary");
+        b.classList.add("btn-outline-secondary");
+      }
       activeTags.has(t) ? activeTags.delete(t) : activeTags.add(t); 
       updateSelectedTags();
       render(); 
@@ -144,7 +143,10 @@
   // タグクリア機能
   clearTagsBtn.addEventListener("click", () => {
     activeTags.clear();
-    document.querySelectorAll(".tag.active").forEach(tag => tag.classList.remove("active"));
+    document.querySelectorAll("[data-tag]").forEach(tag => {
+      tag.classList.remove("active", "btn-secondary");
+      tag.classList.add("btn-outline-secondary");
+    });
     updateSelectedTags();
     render();
   });
@@ -175,7 +177,11 @@
         badge.querySelector(".btn-close").onclick = (e) => {
           e.preventDefault();
           activeTags.delete(tag);
-          document.querySelector(`[data-tag="${tag}"]`)?.classList.remove("active");
+          const tagBtn = document.querySelector(`[data-tag="${tag}"]`);
+          if (tagBtn) {
+            tagBtn.classList.remove("active", "btn-secondary");
+            tagBtn.classList.add("btn-outline-secondary");
+          }
           updateSelectedTags();
           render();
         };
@@ -203,10 +209,10 @@
     const div = document.createElement("div");
     div.className = "col-md-4 col-lg-3";
     const a = document.createElement("a");
-    a.className = "card h-100";
+    a.className = "card h-100 text-decoration-none text-body";
     a.href = `items/${t.slug}/`;     // ← 詳細ページへ
     a.innerHTML = `
-      <img class="thumb card-img-top" loading="lazy" src="${t.thumb}" alt="${t.title} - ${t.category}素材画像">
+      <img class="card-img-top object-fit-cover" loading="lazy" src="${t.thumb}" alt="${t.title} - ${t.category}素材画像" style="height: 200px;">
       <div class="card-body">
         <h5 class="card-title">${t.title}</h5>
         <p class="card-text">
