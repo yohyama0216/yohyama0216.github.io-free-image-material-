@@ -109,7 +109,7 @@ class SitemapGenerator
      */
     private function getBaseUrl()
     {
-        // GitHub Pagesのデフォルト設定
-        return 'https://yohyama0216.github.io/free-image-material';
+        // GitHub Pagesのリポジトリ名に対応
+        return 'https://yohyama0216.github.io/yohyama0216.github.io-free-image-material-';
     }
 }

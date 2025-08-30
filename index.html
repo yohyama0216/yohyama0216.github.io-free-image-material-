@@ -265,6 +265,12 @@ function renderLatestItems(items) {
   const data = await res.json();
   let items = data.items || [];
 
+  // thumbnailPathをthumbプロパティとして設定
+  items = items.map(item => ({
+    ...item,
+    thumb: item.thumbnailPath
+  }));
+
   const cats = Array.from(new Set(items.map(x => x.category))).sort();
   const tags = Array.from(new Set(items.flatMap(x => x.tags))).sort();
 

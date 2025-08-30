@@ -84,14 +84,21 @@ class Builder
      */
     private function generateAssetsJson($items)
     {
+        // パスの正規化（バックスラッシュをスラッシュに変換）
+        $normalizedItems = array_map(function($item) {
+            $item['originalPath'] = str_replace('\\', '/', $item['originalPath']);
+            $item['thumbnailPath'] = str_replace('\\', '/', $item['thumbnailPath']);
+            return $item;
+        }, $items);
+        
         $payload = [
             'updatedAt' => date('c'),
-            'items' => $items
+            'items' => $normalizedItems
         ];
         
         file_put_contents(
             $this->config->getOutJson(),
-            json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+            json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
         );
     }
 }

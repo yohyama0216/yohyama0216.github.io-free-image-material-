@@ -122,7 +122,7 @@ class ImageProcessor
         Utils::ensureDir($thumbsDir);
         
         $extension = pathinfo($originalPath, PATHINFO_EXTENSION);
-        $thumbPath = $thumbsDir . '/' . $filename . '_thumb.' . $extension;
+        $thumbPath = $thumbsDir . DIRECTORY_SEPARATOR . $filename . '_thumb.' . $extension;
         $relativeThumbPath = 'assets/_thumbs/' . $filename . '_thumb.' . $extension;
         
         // 既にサムネイルが存在し、元画像より新しい場合はスキップ
