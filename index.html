@@ -27,7 +27,7 @@
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-6">
-        <h1 class="display-4 fw-bold mb-3">Free Game Materials</h1>
+        <h1 class="display-4 fw-bold mb-3">【フリー素材】ゲームまてりあるず</h1>
         <p class="lead mb-4">ゲーム開発に最適なフリー画像素材集。UI、背景、キャラクターなど豊富なカテゴリの高品質素材を無料で提供。商用利用可能で即ダウンロード可能です。</p>
         <div class="d-flex gap-3">
           <span class="badge bg-light text-dark px-3 py-2">商用利用OK</span>
@@ -161,45 +161,28 @@
   <div class="container">
     <div class="row">
       <div class="col-md-4">
-        <h5>Free Game Materials</h5>
-        <p class="text-muted">ゲーム開発に最適なフリー素材を提供しています。</p>
+        <h5>【フリー素材】ゲームまてりあるず</h5>
+        <p class="small mb-0">ゲーム制作に役立つフリー画像素材を提供しています。</p>
       </div>
-      <div class="col-md-2">
-        <h6>ナビゲーション</h6>
+      <div class="col-md-4">
+        <h6>メニュー</h6>
         <ul class="list-unstyled">
-          <li><a href="./" class="text-light text-decoration-none">素材一覧</a></li>
-          <li><a href="tags.html" class="text-light text-decoration-none">タグ一覧</a></li>
+          <li><a href="#" class="text-light text-decoration-none small">About us</a></li>
+          <li><a href="#" class="text-light text-decoration-none small">Privacy policy</a></li>
+          <li><a href="#" class="text-light text-decoration-none small">Terms of Use</a></li>
+          <li><a href="#" class="text-light text-decoration-none small">BOOTH</a></li>
         </ul>
       </div>
-      <div class="col-md-3">
-        <h6>カテゴリ</h6>
-        <div id="footerCategories" class="d-flex flex-wrap gap-1">
-          <!-- カテゴリがここに動的に追加される -->
-        </div>
-      </div>
-      <div class="col-md-3">
-        <h6>利用について</h6>
-        <ul class="list-unstyled">
-          <li><small>✓ 商用利用可能</small></li>
-          <li><small>✓ クレジット不要</small></li>
-          <li><small>✓ 加工・改変OK</small></li>
-        </ul>
-      </div>
-    </div>
-    <hr class="my-3">
-    
-    <!-- タグ一覧セクション -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <h6 class="text-white mb-3">🏷️ すべてのタグ</h6>
-        <div id="footerTags" class="d-flex flex-wrap gap-2">
-          <!-- タグがここに動的に追加される -->
+      <div class="col-md-4">
+        <h6>人気タグ</h6>
+        <div id="footerTags" class="d-flex flex-wrap gap-1">
+          <!-- 人気タグがここに動的に表示される -->
         </div>
       </div>
     </div>
-    
+    <hr>
     <div class="text-center">
-      <small class="text-muted">© 2025 Free Game Materials. All rights reserved.</small>
+      <small>&copy; 【フリー素材】ゲームまてりあるず｜無料の背景イラスト. All rights reserved.</small>
     </div>
   </div>
 </footer>
@@ -311,61 +294,28 @@ function renderLatestItems(items) {
     document.getElementById("cat").value = categoryParam;
   }
 
-  // フッターのカテゴリを追加
-  const footerCats = document.getElementById("footerCategories");
-  cats.slice(0, 8).forEach(cat => {
-    const badge = document.createElement("span");
-    badge.className = "badge bg-secondary text-decoration-none";
-    badge.textContent = cat;
-    badge.style.cursor = "pointer";
-    badge.onclick = () => {
-      document.getElementById("cat").value = cat;
-      document.querySelector('main').scrollIntoView({ behavior: 'smooth' });
-      render();
-    };
-    footerCats.appendChild(badge);
-  });
-
   // フッターのタグ一覧を追加
   const footerTags = document.getElementById("footerTags");
   
-  // タグを頻度順でソートして上位30個を表示
+  // タグを頻度順でソートして上位8個を表示
   const sortedFooterTags = tags.sort((a, b) => {
     const freqA = tagFreq[a] || 0;
     const freqB = tagFreq[b] || 0;
     return freqB - freqA;
-  }).slice(0, 30);
+  }).slice(0, 8);
   
   sortedFooterTags.forEach(tag => {
-    const tagLink = document.createElement("span");
-    tagLink.className = "badge bg-outline-light text-light border border-secondary";
-    tagLink.style.cursor = "pointer";
+    const tagLink = document.createElement("a");
+    tagLink.className = "btn btn-outline-light btn-sm";
+    tagLink.href = `index.html?tag=${encodeURIComponent(tag)}`;
     tagLink.textContent = tag;
     tagLink.title = `「${tag}」で絞り込み検索`;
     
-    tagLink.onclick = () => {
-      // メインのタグボタンをアクティブにする
-      const mainTagBtn = document.querySelector(`[data-tag="${tag}"]`);
-      if (mainTagBtn && !mainTagBtn.classList.contains("active")) {
-        mainTagBtn.click(); // タグボタンのクリックイベントを発火
-      }
-      
-      // 検索セクションまでスクロール
-      document.querySelector('main').scrollIntoView({ behavior: 'smooth' });
-    };
-    
-    tagLink.onmouseenter = () => {
-      tagLink.classList.remove("bg-outline-light");
-      tagLink.classList.add("bg-light", "text-dark");
-    };
-    
-    tagLink.onmouseleave = () => {
-      tagLink.classList.remove("bg-light", "text-dark");
-      tagLink.classList.add("bg-outline-light");
-    };
-    
+    footerTags.appendChild(tagLink);
     footerTags.appendChild(tagLink);
   });
+
+  // フッターのカテゴリ機能は削除（コードを削除）
 
   const catSel = document.getElementById("cat");
   cats.forEach(c => { const o=document.createElement("option"); o.value=c; o.textContent=c; catSel.appendChild(o); });
