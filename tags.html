@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>タグ一覧 - フリー画像素材集</title>
+  <meta name="description" content="フリー画像素材のタグ一覧ページ。カテゴリ別、使用頻度別にタグを整理して表示。効率的に素材を探すことができます。">
+  <meta name="keywords" content="タグ一覧,フリー素材,ゲーム素材,検索,カテゴリ,分類">
+  <meta name="author" content="Free Game Materials">
+  <meta property="og:title" content="タグ一覧 - フリー画像素材集">
+  <meta property="og:description" content="フリー画像素材のタグ一覧ページ。カテゴリ別、使用頻度別にタグを整理して表示。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yohyama0216.github.io/free-image-material/tags.html">
+  <meta property="og:image" content="https://yohyama0216.github.io/free-image-material/assets/og-image.jpg">
+  <link rel="canonical" href="https://yohyama0216.github.io/free-image-material/tags.html">
+  <link rel="icon" href="data:," />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+<!-- ナビゲーション -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="./">
+      🎮 Free Game Materials
+    </a>
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link" href="./">← 素材一覧に戻る</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ヘッダー -->
+<section class="bg-light py-4">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h1 class="h2 fw-bold mb-2">🏷️ タグ一覧</h1>
+        <p class="text-muted mb-0">素材を効率的に見つけるためのタグ分類一覧です。</p>
+      </div>
+      <div class="col-md-4 text-end">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-outline-primary active" id="viewFrequency" onclick="changeView('frequency')">
+            使用頻度順
+          </button>
+          <button type="button" class="btn btn-outline-primary" id="viewAlphabetical" onclick="changeView('alphabetical')">
+            アルファベット順
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 統計情報 -->
+<section class="py-3 border-bottom">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-3">
+        <div class="h5 fw-bold text-primary" id="totalTagsCount">-</div>
+        <small class="text-muted">総タグ数</small>
+      </div>
+      <div class="col-md-3">
+        <div class="h5 fw-bold text-primary" id="totalItemsCount">-</div>
+        <small class="text-muted">総素材数</small>
+      </div>
+      <div class="col-md-3">
+        <div class="h5 fw-bold text-primary" id="avgTagsPerItem">-</div>
+        <small class="text-muted">平均タグ数/素材</small>
+      </div>
+      <div class="col-md-3">
+        <div class="h5 fw-bold text-primary" id="mostPopularTag">-</div>
+        <small class="text-muted">最人気タグ</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 検索フィルター -->
+<section class="py-4">
+  <div class="container">
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">🔍 タグを検索</label>
+        <input id="tagSearch" type="search" class="form-control" placeholder="タグ名を入力して検索...">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">📁 カテゴリで絞り込み</label>
+        <select id="categoryFilter" class="form-select">
+          <option value="">すべてのカテゴリ</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">📊 最小使用数</label>
+        <select id="minUsageFilter" class="form-select">
+          <option value="1">1回以上</option>
+          <option value="2">2回以上</option>
+          <option value="3">3回以上</option>
+          <option value="5">5回以上</option>
+          <option value="10">10回以上</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- メインコンテンツ -->
+<main class="py-4">
+  <div class="container">
+    <!-- タグクラウド表示 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">タグクラウド</h5>
+          <small id="filteredTagCount" class="text-muted"></small>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="tagCloud" class="d-flex flex-wrap gap-2">
+          <!-- タグがここに動的に表示される -->
+        </div>
+      </div>
+    </div>
+
+    <!-- タグリスト表示 -->
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5 class="mb-0">詳細タグリスト</h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>タグ名</th>
+                <th>使用回数</th>
+                <th>カテゴリ</th>
+                <th>アクション</th>
+              </tr>
+            </thead>
+            <tbody id="tagTableBody">
+              <!-- タグテーブルがここに動的に表示される -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- フッター -->
+<footer class="bg-dark text-white py-4 mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h5>Free Game Materials</h5>
+        <p class="text-muted">ゲーム開発に最適なフリー素材を提供しています。</p>
+      </div>
+      <div class="col-md-3">
+        <h6>ナビゲーション</h6>
+        <ul class="list-unstyled">
+          <li><a href="./" class="text-light text-decoration-none">素材一覧</a></li>
+          <li><a href="tags.html" class="text-light text-decoration-none">タグ一覧</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3">
+        <h6>利用について</h6>
+        <ul class="list-unstyled">
+          <li><small>✓ 商用利用可能</small></li>
+          <li><small>✓ クレジット不要</small></li>
+          <li><small>✓ 加工・改変OK</small></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="my-3">
+    <div class="text-center">
+      <small class="text-muted">© 2025 Free Game Materials. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script>
+let allTags = [];
+let allItems = [];
+let currentView = 'frequency';
+
+// データを読み込み
+(async function(){
+  try {
+    const res = await fetch("assets.json");
+    const data = await res.json();
+    allItems = data.items || [];
+    
+    // タグ統計を計算
+    calculateTagStatistics();
+    
+    // 初期表示
+    renderAll();
+    
+  } catch (error) {
+    console.error('Failed to load data:', error);
+  }
+})();
+
+// タグ統計を計算
+function calculateTagStatistics() {
+  const tagStats = {};
+  const tagCategories = {};
+  
+  allItems.forEach(item => {
+    item.tags.forEach(tag => {
+      if (!tagStats[tag]) {
+        tagStats[tag] = 0;
+        tagCategories[tag] = new Set();
+      }
+      tagStats[tag]++;
+      tagCategories[tag].add(item.category);
+    });
+  });
+  
+  // タグオブジェクトの配列を作成
+  allTags = Object.keys(tagStats).map(tag => ({
+    name: tag,
+    count: tagStats[tag],
+    categories: Array.from(tagCategories[tag])
+  }));
+  
+  // 統計情報を更新
+  updateStatistics();
+  
+  // カテゴリフィルターを設定
+  setupCategoryFilter();
+}
+
+// 統計情報を更新
+function updateStatistics() {
+  const totalTags = allTags.length;
+  const totalItems = allItems.length;
+  const avgTags = totalItems > 0 ? (allItems.reduce((sum, item) => sum + item.tags.length, 0) / totalItems).toFixed(1) : 0;
+  const mostPopular = allTags.length > 0 ? allTags.reduce((max, tag) => tag.count > max.count ? tag : max, allTags[0]).name : '-';
+  
+  document.getElementById('totalTagsCount').textContent = totalTags;
+  document.getElementById('totalItemsCount').textContent = totalItems;
+  document.getElementById('avgTagsPerItem').textContent = avgTags;
+  document.getElementById('mostPopularTag').textContent = mostPopular;
+}
+
+// カテゴリフィルターを設定
+function setupCategoryFilter() {
+  const categories = Array.from(new Set(allItems.map(item => item.category))).sort();
+  const select = document.getElementById('categoryFilter');
+  
+  categories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    select.appendChild(option);
+  });
+}
+
+// 表示方法を変更
+function changeView(view) {
+  currentView = view;
+  
+  // ボタンのアクティブ状態を更新
+  document.getElementById('viewFrequency').classList.toggle('active', view === 'frequency');
+  document.getElementById('viewAlphabetical').classList.toggle('active', view === 'alphabetical');
+  
+  renderAll();
+}
+
+// フィルタリングされたタグを取得
+function getFilteredTags() {
+  const searchTerm = document.getElementById('tagSearch').value.toLowerCase();
+  const categoryFilter = document.getElementById('categoryFilter').value;
+  const minUsage = parseInt(document.getElementById('minUsageFilter').value);
+  
+  let filtered = allTags.filter(tag => {
+    // 検索語でフィルタ
+    const matchesSearch = !searchTerm || tag.name.toLowerCase().includes(searchTerm);
+    
+    // カテゴリでフィルタ
+    const matchesCategory = !categoryFilter || tag.categories.includes(categoryFilter);
+    
+    // 最小使用数でフィルタ
+    const matchesUsage = tag.count >= minUsage;
+    
+    return matchesSearch && matchesCategory && matchesUsage;
+  });
+  
+  // ソート
+  if (currentView === 'frequency') {
+    filtered.sort((a, b) => b.count - a.count);
+  } else {
+    filtered.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  
+  return filtered;
+}
+
+// タグクラウドを描画
+function renderTagCloud(tags) {
+  const container = document.getElementById('tagCloud');
+  
+  if (tags.length === 0) {
+    container.innerHTML = '<p class="text-muted text-center py-4">該当するタグがありません</p>';
+    return;
+  }
+  
+  const maxCount = Math.max(...tags.map(tag => tag.count));
+  
+  container.innerHTML = tags.map(tag => {
+    const sizeLevel = Math.min(5, Math.ceil((tag.count / maxCount) * 5));
+    let sizeClass = 'fs-6';
+    let badgeClass = 'bg-secondary';
+    
+    if (sizeLevel >= 5) {
+      sizeClass = 'fs-4';
+      badgeClass = 'bg-primary';
+    } else if (sizeLevel >= 4) {
+      sizeClass = 'fs-5';
+      badgeClass = 'bg-info';
+    } else if (sizeLevel >= 3) {
+      sizeClass = 'fs-6';
+      badgeClass = 'bg-success';
+    }
+    
+    return `
+      <span class="badge ${badgeClass} ${sizeClass} me-2 mb-2" 
+            style="cursor: pointer;"
+            onclick="searchByTag('${tag.name}')"
+            title="${tag.count}個の素材で使用&#10;カテゴリ: ${tag.categories.join(', ')}">
+        ${tag.name} (${tag.count})
+      </span>
+    `;
+  }).join('');
+}
+
+// タグテーブルを描画
+function renderTagTable(tags) {
+  const tbody = document.getElementById('tagTableBody');
+  
+  if (tags.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">該当するタグがありません</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = tags.map(tag => `
+    <tr>
+      <td>
+        <span class="badge bg-light text-dark">${tag.name}</span>
+      </td>
+      <td>
+        <span class="badge bg-primary">${tag.count}</span>
+      </td>
+      <td>
+        <div class="d-flex flex-wrap gap-1">
+          ${tag.categories.map(cat => `<span class="badge bg-outline-secondary small">${cat}</span>`).join('')}
+        </div>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" onclick="searchByTag('${tag.name}')">
+          このタグで検索
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// すべてを描画
+function renderAll() {
+  const filteredTags = getFilteredTags();
+  
+  renderTagCloud(filteredTags);
+  renderTagTable(filteredTags);
+  
+  document.getElementById('filteredTagCount').textContent = `${filteredTags.length}個のタグを表示中`;
+}
+
+// タグで検索（トップページに移動）
+function searchByTag(tagName) {
+  window.location.href = `./?tag=${encodeURIComponent(tagName)}`;
+}
+
+// イベントリスナーを設定
+document.getElementById('tagSearch').addEventListener('input', renderAll);
+document.getElementById('categoryFilter').addEventListener('change', renderAll);
+document.getElementById('minUsageFilter').addEventListener('change', renderAll);
+</script>
+</body>
+</html>

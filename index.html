@@ -128,7 +128,12 @@
       <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
           <h6 class="mb-0 fw-semibold">🏷️ タグで絞り込み</h6>
-          <small id="tagStats" class="text-muted"></small>
+          <div class="d-flex gap-2 align-items-center">
+            <small id="tagStats" class="text-muted"></small>
+            <a href="tags.html" class="btn btn-outline-secondary btn-sm">
+              すべてのタグを見る
+            </a>
+          </div>
         </div>
       </div>
       <div class="card-body">
@@ -155,9 +160,22 @@
 <footer class="bg-dark text-white py-4 mt-5">
   <div class="container">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-4">
         <h5>Free Game Materials</h5>
         <p class="text-muted">ゲーム開発に最適なフリー素材を提供しています。</p>
+      </div>
+      <div class="col-md-2">
+        <h6>ナビゲーション</h6>
+        <ul class="list-unstyled">
+          <li><a href="./" class="text-light text-decoration-none">素材一覧</a></li>
+          <li><a href="tags.html" class="text-light text-decoration-none">タグ一覧</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3">
+        <h6>カテゴリ</h6>
+        <div id="footerCategories" class="d-flex flex-wrap gap-1">
+          <!-- カテゴリがここに動的に追加される -->
+        </div>
       </div>
       <div class="col-md-3">
         <h6>利用について</h6>
@@ -166,12 +184,6 @@
           <li><small>✓ クレジット不要</small></li>
           <li><small>✓ 加工・改変OK</small></li>
         </ul>
-      </div>
-      <div class="col-md-3">
-        <h6>カテゴリ</h6>
-        <div id="footerCategories" class="d-flex flex-wrap gap-1">
-          <!-- カテゴリがここに動的に追加される -->
-        </div>
       </div>
     </div>
     <hr class="my-3">
@@ -289,6 +301,16 @@ function renderLatestItems(items) {
   // 新着素材を表示
   renderLatestItems(items);
 
+  // URLパラメータからタグやカテゴリを読み取り
+  const urlParams = new URLSearchParams(window.location.search);
+  const tagParam = urlParams.get('tag');
+  const categoryParam = urlParams.get('category');
+  
+  // パラメータに基づいて初期設定
+  if (categoryParam) {
+    document.getElementById("cat").value = categoryParam;
+  }
+
   // フッターのカテゴリを追加
   const footerCats = document.getElementById("footerCategories");
   cats.slice(0, 8).forEach(cat => {
@@ -386,6 +408,18 @@ function renderLatestItems(items) {
     };
     tagbar.appendChild(b);
   });
+
+  // URLパラメータのタグを自動選択
+  if (tagParam) {
+    const tagBtn = document.querySelector(`[data-tag="${tagParam}"]`);
+    if (tagBtn) {
+      tagBtn.click(); // タグボタンをクリックして選択状態にする
+      // メインの検索エリアまでスクロール
+      setTimeout(() => {
+        document.querySelector('main').scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }
 
   const q = document.getElementById("q");
   const sortSel = document.getElementById("sort");
