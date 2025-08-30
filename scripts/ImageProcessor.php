@@ -21,7 +21,13 @@ class ImageProcessor
         $items = [];
         $assetsDir = $this->config->getAssetsDir();
         
+        // 画像ファイルのみを処理
         Utils::walkDirectory($assetsDir, function($filePath) use (&$items) {
+            // _thumbsディレクトリは除外
+            if (strpos($filePath, '_thumbs') !== false) {
+                return;
+            }
+            
             $this->processImage($filePath, $items);
         });
         
@@ -52,8 +58,12 @@ class ImageProcessor
             return;
         }
         
-        // パス情報
-        $relativePath = str_replace($this->config->getRoot() . DIRECTORY_SEPARATOR, '', $filePath);
+        // パス情報の正規化
+        $assetsDir = realpath($this->config->getAssetsDir());
+        $realFilePath = realpath($filePath);
+        
+        // assets/以降の相対パスを取得
+        $relativePath = 'assets/' . str_replace($assetsDir . DIRECTORY_SEPARATOR, '', $realFilePath);
         $relativePath = str_replace('\\', '/', $relativePath); // Windows対応
         
         $filename = pathinfo($filePath, PATHINFO_FILENAME);

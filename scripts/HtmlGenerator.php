@@ -44,6 +44,9 @@ class HtmlGenerator
      */
     private function replaceTemplateVariables($template, $item)
     {
+        $extension = strtoupper(pathinfo($item['originalPath'], PATHINFO_EXTENSION));
+        $filename = pathinfo($item['originalPath'], PATHINFO_FILENAME) . '.' . pathinfo($item['originalPath'], PATHINFO_EXTENSION);
+        
         $replacements = [
             '{{title}}' => htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8'),
             '{{category}}' => htmlspecialchars($item['category'], ENT_QUOTES, 'UTF-8'),
@@ -57,6 +60,8 @@ class HtmlGenerator
             '{{slug}}' => htmlspecialchars($item['slug'], ENT_QUOTES, 'UTF-8'),
             '{{createdAt}}' => htmlspecialchars($item['createdAt'], ENT_QUOTES, 'UTF-8'),
             '{{updatedAt}}' => htmlspecialchars($item['updatedAt'], ENT_QUOTES, 'UTF-8'),
+            '{{format}}' => $extension,
+            '{{filename}}' => htmlspecialchars($filename, ENT_QUOTES, 'UTF-8'),
             '{{tags}}' => implode(',', array_map(function($tag) {
                 return htmlspecialchars($tag, ENT_QUOTES, 'UTF-8');
             }, $item['tags']))
