@@ -71,6 +71,7 @@ export async function processImage(fullPath, slugGenerator) {
     height: meta.height ?? null,
     bytes,
     file: `assets/${relFromAssets}`,
+    originalPath: `assets/${relFromAssets}`, // 詳細ページ用
     thumb: thumbRel,
     license: metadata.license || DEFAULT_LICENSE,
     author: metadata.author || null,
