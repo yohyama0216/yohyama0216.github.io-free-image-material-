@@ -155,6 +155,17 @@
       </div>
     </div>
     <hr class="my-3">
+    
+    <!-- タグ一覧セクション -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h6 class="text-white mb-3">🏷️ すべてのタグ</h6>
+        <div id="footerTags" class="d-flex flex-wrap gap-2">
+          <!-- タグがここに動的に追加される -->
+        </div>
+      </div>
+    </div>
+    
     <div class="text-center">
       <small class="text-muted">© 2025 Free Game Materials. All rights reserved.</small>
     </div>
@@ -182,6 +193,14 @@ function performHeroSearch() {
   const cats = Array.from(new Set(items.map(x => x.category))).sort();
   const tags = Array.from(new Set(items.flatMap(x => x.tags))).sort();
 
+  // タグの使用頻度を計算
+  const tagFreq = {};
+  items.forEach(item => {
+    item.tags.forEach(tag => {
+      tagFreq[tag] = (tagFreq[tag] || 0) + 1;
+    });
+  });
+
   // 統計情報を更新
   document.getElementById("totalItems").textContent = items.length;
   document.getElementById("totalCategories").textContent = cats.length;
@@ -202,12 +221,45 @@ function performHeroSearch() {
     footerCats.appendChild(badge);
   });
 
-  // タグの使用頻度を計算
-  const tagFreq = {};
-  items.forEach(item => {
-    item.tags.forEach(tag => {
-      tagFreq[tag] = (tagFreq[tag] || 0) + 1;
-    });
+  // フッターのタグ一覧を追加
+  const footerTags = document.getElementById("footerTags");
+  
+  // タグを頻度順でソートして上位30個を表示
+  const sortedFooterTags = tags.sort((a, b) => {
+    const freqA = tagFreq[a] || 0;
+    const freqB = tagFreq[b] || 0;
+    return freqB - freqA;
+  }).slice(0, 30);
+  
+  sortedFooterTags.forEach(tag => {
+    const tagLink = document.createElement("span");
+    tagLink.className = "badge bg-outline-light text-light border border-secondary";
+    tagLink.style.cursor = "pointer";
+    tagLink.textContent = tag;
+    tagLink.title = `「${tag}」で絞り込み検索`;
+    
+    tagLink.onclick = () => {
+      // メインのタグボタンをアクティブにする
+      const mainTagBtn = document.querySelector(`[data-tag="${tag}"]`);
+      if (mainTagBtn && !mainTagBtn.classList.contains("active")) {
+        mainTagBtn.click(); // タグボタンのクリックイベントを発火
+      }
+      
+      // 検索セクションまでスクロール
+      document.querySelector('main').scrollIntoView({ behavior: 'smooth' });
+    };
+    
+    tagLink.onmouseenter = () => {
+      tagLink.classList.remove("bg-outline-light");
+      tagLink.classList.add("bg-light", "text-dark");
+    };
+    
+    tagLink.onmouseleave = () => {
+      tagLink.classList.remove("bg-light", "text-dark");
+      tagLink.classList.add("bg-outline-light");
+    };
+    
+    footerTags.appendChild(tagLink);
   });
 
   const catSel = document.getElementById("cat");
