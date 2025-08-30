@@ -15,21 +15,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+name: Build & Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: "20"
-
-      - name: Install deps (sharp only)
-        run: npm i sharp
+          php-version: '8.1'
+          extensions: gd, json, mbstring
 
       - name: Generate thumbnails & assets.json & sitemap
-        run: node scripts/build-index.mjs
+        run: php scripts/build.php
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
