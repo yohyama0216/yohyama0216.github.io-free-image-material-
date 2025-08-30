@@ -74,6 +74,26 @@
   </div>
 </section>
 
+<!-- 新着素材 -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="h3 fw-bold">🆕 新着素材</h2>
+      <p class="text-muted">最近追加された素材をチェック！</p>
+    </div>
+    
+    <div id="latestItems" class="row g-4 mb-4">
+      <!-- 新着素材が動的に表示される -->
+    </div>
+    
+    <div class="text-center">
+      <button onclick="scrollToSearch()" class="btn btn-outline-primary btn-lg">
+        すべての素材を見る →
+      </button>
+    </div>
+  </div>
+</section>
+
 <!-- 検索・フィルター -->
 <section class="py-4 border-bottom">
   <div class="container">
@@ -185,6 +205,66 @@ function performHeroSearch() {
   // 検索を実行
   render();
 }
+
+// 検索セクションまでスクロール
+function scrollToSearch() {
+  document.querySelector('main').scrollIntoView({ behavior: 'smooth' });
+}
+
+// 新着素材カードを生成
+function createLatestCard(item) {
+  const div = document.createElement("div");
+  div.className = "col-lg-2 col-md-4 col-6";
+  
+  const a = document.createElement("a");
+  a.className = "card h-100 text-decoration-none text-body border-0 shadow-sm";
+  a.href = `items/${item.slug}/`;
+  a.innerHTML = `
+    <div class="position-relative">
+      <img class="card-img-top object-fit-cover" loading="lazy" src="${item.thumb}" alt="${item.title}" style="height: 160px;">
+      <div class="position-absolute top-0 start-0 m-2">
+        <span class="badge bg-success">NEW</span>
+      </div>
+      <div class="position-absolute top-0 end-0 m-2">
+        <span class="badge bg-primary">${item.category}</span>
+      </div>
+    </div>
+    <div class="card-body p-3">
+      <h6 class="card-title mb-1 small">${item.title}</h6>
+      <div class="d-flex flex-wrap gap-1 mb-2">
+        ${item.tags.slice(0, 2).map(tag => `<span class="badge bg-light text-dark small">${tag}</span>`).join('')}
+        ${item.tags.length > 2 ? `<span class="badge bg-light text-muted small">+${item.tags.length - 2}</span>` : ''}
+      </div>
+      <small class="text-muted">${item.width || "?"}×${item.height || "?"}</small>
+    </div>
+  `;
+  
+  // ホバー効果
+  a.onmouseenter = () => {
+    a.classList.add("shadow");
+    a.style.transform = "translateY(-2px)";
+  };
+  a.onmouseleave = () => {
+    a.classList.remove("shadow");
+    a.style.transform = "translateY(0)";
+  };
+  
+  div.appendChild(a);
+  return div;
+}
+
+// 新着素材を表示
+function renderLatestItems(items) {
+  const container = document.getElementById("latestItems");
+  
+  // 最新の5つの素材を取得（仮想的に最新順とする）
+  const latestItems = items.slice(-5).reverse();
+  
+  container.innerHTML = "";
+  latestItems.forEach(item => {
+    container.appendChild(createLatestCard(item));
+  });
+}
 (async function(){
   const res = await fetch("assets.json");
   const data = await res.json();
@@ -205,6 +285,9 @@ function performHeroSearch() {
   document.getElementById("totalItems").textContent = items.length;
   document.getElementById("totalCategories").textContent = cats.length;
   document.getElementById("totalTags").textContent = tags.length;
+
+  // 新着素材を表示
+  renderLatestItems(items);
 
   // フッターのカテゴリを追加
   const footerCats = document.getElementById("footerCategories");
