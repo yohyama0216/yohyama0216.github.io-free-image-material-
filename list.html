@@ -51,29 +51,7 @@
 <body>
 
 <!-- ナビゲーション -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="index.html">
-      <i class="bi bi-images"></i> やまさんのフリー素材屋
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="index.html">🏠 ホーム</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="list.html">📋 素材一覧</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="tags.html">🏷️ タグ一覧</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+<div id="nav-placeholder"></div>
 
 <!-- ページヘッダー -->
 <section class="search-header py-5">
@@ -245,6 +223,7 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="includes/nav.js"></script>
 
 <script>
 let allItems = [];

@@ -1,0 +1,45 @@
+<!-- 共通ナビゲーション -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">
+      <i class="bi bi-images"></i> やまさんのフリー素材屋
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html" id="nav-home">🏠 ホーム</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="list.html" id="nav-list">📋 素材一覧</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="tags.html" id="nav-tags">🏷️ タグ一覧</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<script>
+// 現在のページに応じてアクティブ状態を設定
+document.addEventListener('DOMContentLoaded', function() {
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  
+  // 全てのナビリンクからactiveクラスを削除
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+  });
+  
+  // 現在のページに対応するナビリンクにactiveクラスを追加
+  if (currentPage === 'index.html' || currentPage === '') {
+    document.getElementById('nav-home').classList.add('active');
+  } else if (currentPage === 'list.html') {
+    document.getElementById('nav-list').classList.add('active');
+  } else if (currentPage === 'tags.html') {
+    document.getElementById('nav-tags').classList.add('active');
+  }
+});
+</script>
