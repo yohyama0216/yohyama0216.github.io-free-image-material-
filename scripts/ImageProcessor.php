@@ -35,6 +35,14 @@ class ImageProcessor
     }
     
     /**
+     * 個別画像処理（公開メソッド）
+     */
+    public function processImageFile($filePath, &$items)
+    {
+        $this->processImage($filePath, $items);
+    }
+    
+    /**
      * 個別画像処理
      */
     private function processImage($filePath, &$items)

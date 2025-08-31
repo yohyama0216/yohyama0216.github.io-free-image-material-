@@ -105,6 +105,17 @@ class Builder
 
 // スクリプト実行
 if (basename(__FILE__) === basename($_SERVER['SCRIPT_NAME'])) {
+    // 並列処理が利用可能かチェック
+    if (function_exists('proc_open')) {
+        echo "Parallel processing available, using build-parallel.php...\n";
+        $parallelScript = __DIR__ . '/build-parallel.php';
+        if (file_exists($parallelScript)) {
+            include $parallelScript;
+            exit(0);
+        }
+    }
+    
+    echo "Using single-threaded processing...\n";
     $builder = new Builder();
     $builder->build();
 }
