@@ -18,7 +18,7 @@ async function loadDetailTemplate() {
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <title>{{title}} - フリー画像素材集</title>
+  <title>{{title}} - やまさんのフリー素材屋</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
