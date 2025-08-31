@@ -404,7 +404,7 @@ function updateTagButtons() {
 function createCard(item) {
   return `
     <div class="col-lg-3 col-md-4 col-sm-6">
-      <div class="card card-item h-100" onclick="window.open('items/${item.slug}.html', '_blank')">
+      <div class="card card-item h-100" onclick="window.open('items/${item.slug}/', '_blank')">
         <img src="${item.thumb}" class="card-img-top" alt="${item.title}" loading="lazy">
         <div class="card-body">
           <h6 class="card-title">${item.title}</h6>
