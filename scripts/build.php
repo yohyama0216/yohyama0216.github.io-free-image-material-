@@ -40,6 +40,7 @@ class Builder
             // 詳細ページ生成
             echo "Generating detail pages...\n";
             $htmlGenerator = new HtmlGenerator($this->config);
+            $htmlGenerator->setAllItems($items); // 関連素材計算用に全アイテムを設定
             foreach ($items as $item) {
                 $htmlGenerator->writeDetailPage($item);
             }

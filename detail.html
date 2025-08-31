@@ -19,19 +19,11 @@
   <link rel="canonical" href="https://yohyama0216.github.io/free-image-material/items/{{slug}}/">
   <link rel="icon" href="data:," />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
 <!-- ナビゲーション -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="../../">
-      🎮 やまさんのフリー素材屋
-    </a>
-    <div class="navbar-nav ms-auto">
-      <a class="nav-link" href="../../">← 素材一覧に戻る</a>
-    </div>
-  </div>
-</nav>
+<div id="nav-placeholder"></div>
 
 <!-- メインコンテンツ -->
 <main class="py-4">
@@ -39,8 +31,8 @@
     <!-- パンくずナビ -->
     <nav aria-label="breadcrumb" class="mb-4">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="../../" class="text-decoration-none">ホーム</a></li>
-        <li class="breadcrumb-item"><a href="../../?category={{category}}" class="text-decoration-none">{{category}}</a></li>
+        <li class="breadcrumb-item"><a href="../../index.html" class="text-decoration-none">ホーム</a></li>
+        <li class="breadcrumb-item"><a href="../../list.html?cat={{category}}" class="text-decoration-none">{{category}}</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{title}}</li>
       </ol>
     </nav>
@@ -113,13 +105,41 @@
 
         <!-- 関連素材 -->
         <div class="card shadow-sm mt-4">
-          <div class="card-header">
-            <h6 class="mb-0">関連する素材</h6>
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-grid-3x3-gap"></i> 関連する素材</h6>
+            <small class="text-muted">タグ・カテゴリが類似する素材</small>
           </div>
           <div class="card-body">
-            <div id="relatedItems" class="row g-2">
-              <!-- 関連素材が動的に表示される -->
+            <div class="row g-3">
+              {{#each relatedItems}}
+              <div class="col-lg-4 col-md-6">
+                <a href="../{{slug}}/" class="text-decoration-none">
+                  <div class="card h-100 border-0 shadow-sm">
+                    <div class="position-relative">
+                      <img src="../../{{thumbnailPath}}" class="card-img-top" style="height: 120px; object-fit: cover;" alt="{{title}}">
+                      <div class="position-absolute top-0 end-0 m-2">
+                        <span class="badge bg-primary small">{{category}}</span>
+                      </div>
+                    </div>
+                    <div class="card-body p-2">
+                      <h6 class="card-title small mb-1 text-dark">{{title}}</h6>
+                      <small class="text-muted">{{category}}</small>
+                    </div>
+                  </div>
+                </a>
+              </div>
+              {{/each}}
             </div>
+            
+            {{#unless relatedItems}}
+            <div class="text-center py-4">
+              <i class="bi bi-search text-muted" style="font-size: 2rem;"></i>
+              <p class="text-muted mt-2 mb-0">関連する素材はありません</p>
+              <a href="../../list.html" class="btn btn-outline-primary btn-sm mt-2">
+                すべての素材を見る
+              </a>
+            </div>
+            {{/unless}}
           </div>
         </div>
       </div>
@@ -147,9 +167,10 @@
       <div class="col-md-4">
         <h6>ナビゲーション</h6>
         <ul class="list-unstyled">
-          <li><a href="../../" class="text-light text-decoration-none small">素材一覧</a></li>
+          <li><a href="../../index.html" class="text-light text-decoration-none small">ホーム</a></li>
+          <li><a href="../../list.html" class="text-light text-decoration-none small">素材一覧</a></li>
           <li><a href="../../tags.html" class="text-light text-decoration-none small">タグ一覧</a></li>
-          <li><a href="../../?category={{category}}" class="text-light text-decoration-none small">{{category}}一覧</a></li>
+          <li><a href="../../list.html?cat={{category}}" class="text-light text-decoration-none small">{{category}}一覧</a></li>
         </ul>
       </div>
     </div>
@@ -160,53 +181,7 @@
   </div>
 </footer>
 
-<script>
-// 関連素材を表示
-(async function(){
-  try {
-    const res = await fetch("../../assets.json");
-    const data = await res.json();
-    const items = data.items || [];
-    
-    // 現在のアイテムのカテゴリとタグを取得
-    const currentCategory = "{{category}}";
-    const currentTags = [{{#each tags}}"{{this}}"{{#unless @last}},{{/unless}}{{/each}}];
-    const currentSlug = "{{slug}}";
-    
-    // 関連アイテムを検索（同じカテゴリまたは共通タグを持つもの）
-    const relatedItems = items
-      .filter(item => {
-        if (item.slug === currentSlug) return false; // 自分自身は除外
-        
-        // 同じカテゴリまたは共通タグがある場合
-        const hasCommonTag = currentTags.some(tag => item.tags.includes(tag));
-        return item.category === currentCategory || hasCommonTag;
-      })
-      .slice(0, 6); // 最大6個まで
-    
-    // 関連素材を表示
-    const container = document.getElementById("relatedItems");
-    if (relatedItems.length > 0) {
-      container.innerHTML = relatedItems.map(item => `
-        <div class="col-6">
-          <a href="../${item.slug}/" class="text-decoration-none">
-            <div class="card h-100">
-              <img src="../../${item.thumb}" class="card-img-top" style="height: 80px; object-fit: cover;">
-              <div class="card-body p-2">
-                <h6 class="card-title small mb-1">${item.title}</h6>
-                <small class="text-muted">${item.category}</small>
-              </div>
-            </div>
-          </a>
-        </div>
-      `).join('');
-    } else {
-      container.innerHTML = '<p class="text-muted text-center">関連する素材はありません</p>';
-    }
-  } catch (error) {
-    console.error('Failed to load related items:', error);
-  }
-})();
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../includes/nav.js"></script>
 </body>
 </html>

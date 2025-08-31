@@ -5,10 +5,19 @@
 class HtmlGenerator
 {
     private $config;
+    private $allItems = [];
     
     public function __construct($config)
     {
         $this->config = $config;
+    }
+    
+    /**
+     * 全アイテムを設定（関連素材計算用）
+     */
+    public function setAllItems($items)
+    {
+        $this->allItems = $items;
     }
     
     /**
@@ -72,6 +81,9 @@ class HtmlGenerator
         // タグリスト用の特別な処理
         $html = $this->replaceTagsList($html, $item['tags']);
         
+        // 関連素材の処理
+        $html = $this->replaceRelatedItems($html, $item);
+        
         return $html;
     }
     
@@ -95,5 +107,86 @@ class HtmlGenerator
             
             return $result;
         }, $html);
+    }
+    
+    /**
+     * 関連素材置換
+     */
+    private function replaceRelatedItems($html, $currentItem)
+    {
+        $relatedItems = $this->findRelatedItems($currentItem);
+        
+        // {{#each relatedItems}}...{{/each}} パターンを処理
+        $pattern = '/\{\{#each relatedItems\}\}(.*?)\{\{\/each\}\}/s';
+        $html = preg_replace_callback($pattern, function($matches) use ($relatedItems) {
+            $template = $matches[1];
+            $result = '';
+            
+            foreach ($relatedItems as $index => $item) {
+                $itemHtml = $template;
+                $itemHtml = str_replace('{{title}}', htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8'), $itemHtml);
+                $itemHtml = str_replace('{{slug}}', htmlspecialchars($item['slug'], ENT_QUOTES, 'UTF-8'), $itemHtml);
+                $itemHtml = str_replace('{{category}}', htmlspecialchars($item['category'], ENT_QUOTES, 'UTF-8'), $itemHtml);
+                $itemHtml = str_replace('{{thumbnailPath}}', htmlspecialchars($item['thumbnailPath'], ENT_QUOTES, 'UTF-8'), $itemHtml);
+                $itemHtml = str_replace('{{@last}}', ($index === count($relatedItems) - 1) ? 'true' : 'false', $itemHtml);
+                $result .= $itemHtml;
+            }
+            
+            return $result;
+        }, $html);
+        
+        // {{#unless relatedItems}}...{{/unless}} パターンを処理
+        $unlessPattern = '/\{\{#unless relatedItems\}\}(.*?)\{\{\/unless\}\}/s';
+        $html = preg_replace_callback($unlessPattern, function($matches) use ($relatedItems) {
+            // 関連素材がない場合のみ内容を表示
+            return empty($relatedItems) ? $matches[1] : '';
+        }, $html);
+        
+        return $html;
+    }
+    
+    /**
+     * 関連素材を検索
+     */
+    private function findRelatedItems($currentItem)
+    {
+        if (empty($this->allItems)) {
+            return [];
+        }
+        
+        $relatedItems = [];
+        $currentTags = $currentItem['tags'];
+        $currentCategory = $currentItem['category'];
+        $currentSlug = $currentItem['slug'];
+        
+        foreach ($this->allItems as $item) {
+            if ($item['slug'] === $currentSlug) {
+                continue; // 自分自身は除外
+            }
+            
+            $score = 0;
+            
+            // 同じカテゴリの場合は高スコア
+            if ($item['category'] === $currentCategory) {
+                $score += 10;
+            }
+            
+            // 共通タグの数に応じてスコア加算
+            $commonTags = array_intersect($currentTags, $item['tags']);
+            $score += count($commonTags) * 3;
+            
+            if ($score > 0) {
+                $item['_score'] = $score;
+                $relatedItems[] = $item;
+            }
+        }
+        
+        // スコア順でソート
+        usort($relatedItems, function($a, $b) {
+            return $b['_score'] - $a['_score'];
+        });
+        
+        // 最大6個まで返す
+        return array_slice($relatedItems, 0, 6);
     }
 }
