@@ -26,8 +26,8 @@ jobs:
           php-version: '8.1'
           extensions: gd, json, mbstring
 
-      - name: Generate thumbnails & assets.json & sitemap
-        run: php scripts/build.php
+      - name: Generate thumbnails & assets.json & sitemap (Parallel Processing)
+        run: php scripts/build-parallel.php
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -38,4 +38,4 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/deploy-pages@v4
+      -
