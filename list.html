@@ -182,6 +182,25 @@
     <!-- 素材グリッド -->
     <div id="grid" class="row g-3"></div>
     
+    <!-- ページネーション -->
+    <nav id="pagination" class="mt-4" style="display: none;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <label class="form-label mb-0">表示件数：</label>
+          <select id="itemsPerPageSelect" class="form-select form-select-sm" style="width: auto;">
+            <option value="12">12件</option>
+            <option value="24" selected>24件</option>
+            <option value="48">48件</option>
+            <option value="96">96件</option>
+          </select>
+        </div>
+        <small class="text-muted" id="pageInfo"></small>
+      </div>
+      <ul class="pagination justify-content-center" id="paginationList">
+        <!-- ページネーションボタンがここに動的に生成される -->
+      </ul>
+    </nav>
+    
     <!-- 検索結果なしの場合 -->
     <div id="noResults" class="text-center py-5" style="display: none;">
       <div class="mb-4">
@@ -232,6 +251,11 @@ let allItems = [];
 let filteredItems = [];
 let selectedTags = new Set();
 
+// ページネーション設定
+let currentPage = 1;
+let itemsPerPage = 24; // 1ページあたりの表示数
+let totalPages = 0;
+
 // 全フィルターをクリア
 function clearAllFilters() {
   document.getElementById("q").value = "";
@@ -239,7 +263,100 @@ function clearAllFilters() {
   document.getElementById("sort").value = "title";
   selectedTags.clear();
   updateSelectedTagsDisplay();
+  currentPage = 1; // ページもリセット
   performSearch();
+}
+
+// ページネーション関数
+function updatePagination() {
+  totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const pagination = document.getElementById("pagination");
+  const paginationList = document.getElementById("paginationList");
+  const pageInfo = document.getElementById("pageInfo");
+  
+  if (totalPages <= 1) {
+    pagination.style.display = "none";
+    return;
+  }
+  
+  pagination.style.display = "block";
+  
+  // ページ情報
+  const start = (currentPage - 1) * itemsPerPage + 1;
+  const end = Math.min(currentPage * itemsPerPage, filteredItems.length);
+  pageInfo.textContent = `${start}-${end}件目 (全${filteredItems.length}件)`;
+  
+  // ページネーションボタン生成
+  paginationList.innerHTML = "";
+  
+  // 前へボタン
+  const prevLi = document.createElement("li");
+  prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+  prevLi.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage - 1})">前へ</a>`;
+  paginationList.appendChild(prevLi);
+  
+  // ページ番号ボタン
+  const startPage = Math.max(1, currentPage - 2);
+  const endPage = Math.min(totalPages, currentPage + 2);
+  
+  if (startPage > 1) {
+    const firstLi = document.createElement("li");
+    firstLi.className = "page-item";
+    firstLi.innerHTML = `<a class="page-link" href="#" onclick="goToPage(1)">1</a>`;
+    paginationList.appendChild(firstLi);
+    
+    if (startPage > 2) {
+      const ellipsisLi = document.createElement("li");
+      ellipsisLi.className = "page-item disabled";
+      ellipsisLi.innerHTML = `<span class="page-link">...</span>`;
+      paginationList.appendChild(ellipsisLi);
+    }
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    const li = document.createElement("li");
+    li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+    li.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>`;
+    paginationList.appendChild(li);
+  }
+  
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      const ellipsisLi = document.createElement("li");
+      ellipsisLi.className = "page-item disabled";
+      ellipsisLi.innerHTML = `<span class="page-link">...</span>`;
+      paginationList.appendChild(ellipsisLi);
+    }
+    
+    const lastLi = document.createElement("li");
+    lastLi.className = "page-item";
+    lastLi.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${totalPages})">${totalPages}</a>`;
+    paginationList.appendChild(lastLi);
+  }
+  
+  // 次へボタン
+  const nextLi = document.createElement("li");
+  nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+  nextLi.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage + 1})">次へ</a>`;
+  paginationList.appendChild(nextLi);
+}
+
+function goToPage(page) {
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
+  displayResults();
+  
+  // ページ移動時に上部にスクロール
+  document.querySelector('#resultInfo').scrollIntoView({ 
+    behavior: 'smooth',
+    block: 'start'
+  });
+}
+
+function changeItemsPerPage() {
+  itemsPerPage = parseInt(document.getElementById("itemsPerPageSelect").value);
+  currentPage = 1;
+  displayResults();
 }
 
 // 選択中タグの表示更新
@@ -350,6 +467,9 @@ function performSearch() {
     }
   });
   
+  // 検索条件が変わったらページをリセット
+  currentPage = 1;
+  
   // 結果表示
   displayResults();
 }
@@ -365,6 +485,7 @@ function displayResults() {
     grid.innerHTML = "";
     resultInfo.style.display = "none";
     noResults.style.display = "block";
+    document.getElementById("pagination").style.display = "none";
     return;
   }
   
@@ -381,8 +502,16 @@ function displayResults() {
     resultText.textContent = `${total} 件中 ${current} 件を表示中`;
   }
   
-  // グリッド表示
-  grid.innerHTML = filteredItems.map(createCard).join("");
+  // ページネーション計算
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredItems.length);
+  const pageItems = filteredItems.slice(startIndex, endIndex);
+  
+  // グリッド表示（現在のページの分のみ）
+  grid.innerHTML = pageItems.map(createCard).join("");
+  
+  // ページネーション更新
+  updatePagination();
 }
 
 // 初期化
@@ -470,6 +599,7 @@ function displayResults() {
     document.getElementById("q").addEventListener("input", performSearch);
     document.getElementById("cat").addEventListener("change", performSearch);
     document.getElementById("sort").addEventListener("change", performSearch);
+    document.getElementById("itemsPerPageSelect").addEventListener("change", changeItemsPerPage);
     document.getElementById("clearTags").addEventListener("click", () => {
       selectedTags.clear();
       updateSelectedTagsDisplay();
