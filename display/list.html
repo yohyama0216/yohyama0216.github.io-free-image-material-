@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>素材一覧 - やまさんのフリー素材屋</title>
+  <meta name="description" content="やまさんのフリー素材屋の全素材一覧。カテゴリやタグで検索・絞り込みができます。">
+  <meta name="keywords" content="フリー素材,無料,画像,イラスト,背景,UI,パターン,検索">
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <style>
+    .card-item {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      height: 100%;
+    }
+    .card-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .card-item img {
+      height: 200px;
+      object-fit: cover;
+    }
+    .tag-item {
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+    .tag-item:hover {
+      transform: scale(1.05);
+    }
+    .tag-item.active {
+      background-color: #0d6efd !important;
+      color: white !important;
+      border-color: #0d6efd !important;
+    }
+    .result-info {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+    }
+    .search-header {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ナビゲーション -->
+<div id="nav-placeholder"></div>
+
+<!-- ページヘッダー -->
+<section class="search-header py-5">
+  <div class="container text-center">
+    <h1 class="display-5 fw-bold mb-3">
+      <i class="bi bi-search"></i> 素材を探す
+    </h1>
+    <p class="lead mb-0">キーワード、カテゴリ、タグで絞り込んで理想の素材を見つけよう</p>
+  </div>
+</section>
+
+<!-- 統計情報 -->
+<section class="py-4 bg-light">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-3">
+        <div class="h4 fw-bold text-primary" id="totalItems">-</div>
+        <div class="text-muted">総素材数</div>
+      </div>
+      <div class="col-md-3">
+        <div class="h4 fw-bold text-primary" id="totalCategories">-</div>
+        <div class="text-muted">カテゴリ</div>
+      </div>
+      <div class="col-md-3">
+        <div class="h4 fw-bold text-primary" id="totalTags">-</div>
+        <div class="text-muted">タグ</div>
+      </div>
+      <div class="col-md-3">
+        <div class="h4 fw-bold text-primary">CC0</div>
+        <div class="text-muted">ライセンス</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 検索・フィルター -->
+<section class="py-4 border-bottom">
+  <div class="container">
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">🔍 キーワード検索</label>
+        <input id="q" type="search" class="form-control" placeholder="例：sky, ui, grass">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">📁 カテゴリ</label>
+        <select id="cat" class="form-select">
+          <option value="">すべてのカテゴリ</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">📊 並び替え</label>
+        <select id="sort" class="form-select">
+          <option value="title">タイトル順</option>
+          <option value="wdesc">サイズ大→小</option>
+          <option value="wasc">サイズ小→大</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fw-semibold">🏷️ タグ</label>
+        <button id="clearTags" class="btn btn-outline-danger w-100" title="選択中のタグをクリア">
+          クリア
+        </button>
+      </div>
+    </div>
+    
+    <!-- タグクラウド -->
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h6 class="mb-0 fw-semibold">🏷️ タグで絞り込み</h6>
+          <div class="d-flex gap-2 align-items-center">
+            <small id="tagStats" class="text-muted"></small>
+            <a href="tags.html" class="btn btn-outline-secondary btn-sm">
+              すべてのタグを見る
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="tagbar" class="d-flex flex-wrap gap-2"></div>
+        <div id="selectedTags" class="mt-3 p-2 bg-light rounded" style="display: none;">
+          <small class="text-muted fw-semibold">選択中のタグ：</small>
+          <div id="selectedTagsList" class="d-inline-flex flex-wrap gap-1 ms-2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 検索結果 -->
+<main class="py-4">
+  <div class="container">
+    <!-- 結果表示エリア -->
+    <div id="resultInfo" class="alert result-info mb-4" style="display: none;">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <i class="bi bi-info-circle"></i>
+          <span id="resultText"></span>
+        </div>
+        <button class="btn btn-outline-light btn-sm" onclick="clearAllFilters()">
+          <i class="bi bi-arrow-clockwise"></i> フィルターをクリア
+        </button>
+      </div>
+    </div>
+    
+    <!-- 素材グリッド -->
+    <div id="grid" class="row g-3"></div>
+    
+    <!-- ページネーション -->
+    <nav id="pagination" class="mt-4" style="display: none;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <label class="form-label mb-0">表示件数：</label>
+          <select id="itemsPerPageSelect" class="form-select form-select-sm" style="width: auto;">
+            <option value="12">12件</option>
+            <option value="24" selected>24件</option>
+            <option value="48">48件</option>
+            <option value="96">96件</option>
+          </select>
+        </div>
+        <small class="text-muted" id="pageInfo"></small>
+      </div>
+      <ul class="pagination justify-content-center" id="paginationList">
+        <!-- ページネーションボタンがここに動的に生成される -->
+      </ul>
+    </nav>
+    
+    <!-- 検索結果なしの場合 -->
+    <div id="noResults" class="text-center py-5" style="display: none;">
+      <div class="mb-4">
+        <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
+      </div>
+      <h3 class="text-muted mb-3">検索結果が見つかりませんでした</h3>
+      <p class="text-muted mb-4">別のキーワードやカテゴリで検索してみてください</p>
+      <button class="btn btn-primary" onclick="clearAllFilters()">
+        <i class="bi bi-arrow-clockwise"></i> フィルターをクリア
+      </button>
+    </div>
+  </div>
+</main>
+
+<footer class="bg-dark text-white py-4 mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h5>やまさんのフリー素材屋</h5>
+        <p class="small mb-0">クリエイター向けのフリー画像素材を提供しています。</p>
+      </div>
+      <div class="col-md-4">
+        <h6>メニュー</h6>
+        <ul class="list-unstyled">
+          <li><a href="index.html" class="text-light text-decoration-none small">ホーム</a></li>
+          <li><a href="list.html" class="text-light text-decoration-none small">素材一覧</a></li>
+          <li><a href="tags.html" class="text-light text-decoration-none small">タグ一覧</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h6>人気タグ</h6>
+        <div id="footerTags" class="d-flex flex-wrap gap-1">
+          <!-- 人気タグがここに動的に表示される -->
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="text-center">
+      <small>&copy; やまさんのフリー素材屋｜無料の背景イラスト. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="includes/nav.js"></script>
+
+<script>
+let allItems = [];
+let filteredItems = [];
+let selectedTags = new Set();
+
+// ページネーション設定
+let currentPage = 1;
+let itemsPerPage = 24; // 1ページあたりの表示数
+let totalPages = 0;
+
+// 全フィルターをクリア
+function clearAllFilters() {
+  document.getElementById("q").value = "";
+  document.getElementById("cat").value = "";
+  document.getElementById("sort").value = "title";
+  selectedTags.clear();
+  updateSelectedTagsDisplay();
+  currentPage = 1; // ページもリセット
+  performSearch();
+}
+
+// ページネーション関数
+function updatePagination() {
+  totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const pagination = document.getElementById("pagination");
+  const paginationList = document.getElementById("paginationList");
+  const pageInfo = document.getElementById("pageInfo");
+  
+  if (totalPages <= 1) {
+    pagination.style.display = "none";
+    return;
+  }
+  
+  pagination.style.display = "block";
+  
+  // ページ情報
+  const start = (currentPage - 1) * itemsPerPage + 1;
+  const end = Math.min(currentPage * itemsPerPage, filteredItems.length);
+  pageInfo.textContent = `${start}-${end}件目 (全${filteredItems.length}件)`;
+  
+  // ページネーションボタン生成
+  paginationList.innerHTML = "";
+  
+  // 前へボタン
+  const prevLi = document.createElement("li");
+  prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+  prevLi.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage - 1})">前へ</a>`;
+  paginationList.appendChild(prevLi);
+  
+  // ページ番号ボタン
+  const startPage = Math.max(1, currentPage - 2);
+  const endPage = Math.min(totalPages, currentPage + 2);
+  
+  if (startPage > 1) {
+    const firstLi = document.createElement("li");
+    firstLi.className = "page-item";
+    firstLi.innerHTML = `<a class="page-link" href="#" onclick="goToPage(1)">1</a>`;
+    paginationList.appendChild(firstLi);
+    
+    if (startPage > 2) {
+      const ellipsisLi = document.createElement("li");
+      ellipsisLi.className = "page-item disabled";
+      ellipsisLi.innerHTML = `<span class="page-link">...</span>`;
+      paginationList.appendChild(ellipsisLi);
+    }
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    const li = document.createElement("li");
+    li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+    li.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>`;
+    paginationList.appendChild(li);
+  }
+  
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      const ellipsisLi = document.createElement("li");
+      ellipsisLi.className = "page-item disabled";
+      ellipsisLi.innerHTML = `<span class="page-link">...</span>`;
+      paginationList.appendChild(ellipsisLi);
+    }
+    
+    const lastLi = document.createElement("li");
+    lastLi.className = "page-item";
+    lastLi.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${totalPages})">${totalPages}</a>`;
+    paginationList.appendChild(lastLi);
+  }
+  
+  // 次へボタン
+  const nextLi = document.createElement("li");
+  nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+  nextLi.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage + 1})">次へ</a>`;
+  paginationList.appendChild(nextLi);
+}
+
+function goToPage(page) {
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
+  displayResults();
+  
+  // ページ移動時に上部にスクロール
+  document.querySelector('#resultInfo').scrollIntoView({ 
+    behavior: 'smooth',
+    block: 'start'
+  });
+}
+
+function changeItemsPerPage() {
+  itemsPerPage = parseInt(document.getElementById("itemsPerPageSelect").value);
+  currentPage = 1;
+  displayResults();
+}
+
+// 選択中タグの表示更新
+function updateSelectedTagsDisplay() {
+  const container = document.getElementById("selectedTags");
+  const list = document.getElementById("selectedTagsList");
+  
+  if (selectedTags.size === 0) {
+    container.style.display = "none";
+    return;
+  }
+  
+  container.style.display = "block";
+  list.innerHTML = "";
+  
+  selectedTags.forEach(tag => {
+    const span = document.createElement("span");
+    span.className = "badge bg-primary me-1";
+    span.innerHTML = `${tag} <i class="bi bi-x" onclick="removeTag('${tag}')" style="cursor: pointer;"></i>`;
+    list.appendChild(span);
+  });
+}
+
+// タグ削除
+function removeTag(tag) {
+  selectedTags.delete(tag);
+  updateSelectedTagsDisplay();
+  updateTagButtons();
+  performSearch();
+}
+
+// タグボタンの状態更新
+function updateTagButtons() {
+  document.querySelectorAll(".tag-item").forEach(btn => {
+    const tag = btn.textContent.trim();
+    if (selectedTags.has(tag)) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+}
+
+// 素材カード作成
+function createCard(item) {
+  return `
+    <div class="col-lg-3 col-md-4 col-sm-6">
+      <div class="card card-item h-100" onclick="window.open('items/${item.slug}/', '_blank')">
+        <img src="${item.thumb}" class="card-img-top" alt="${item.title}" loading="lazy">
+        <div class="card-body">
+          <h6 class="card-title">${item.title}</h6>
+          <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+              <i class="bi bi-folder"></i> ${item.category}
+            </small>
+            <small class="text-muted">
+              ${item.width}×${item.height}
+            </small>
+          </div>
+          <div class="mt-2">
+            ${item.tags.slice(0, 3).map(tag => 
+              `<span class="badge bg-light text-dark me-1" style="font-size: 0.7em;">${tag}</span>`
+            ).join('')}
+            ${item.tags.length > 3 ? '<span class="text-muted" style="font-size: 0.7em;">...</span>' : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 検索実行
+function performSearch() {
+  const query = document.getElementById("q").value.toLowerCase();
+  const category = document.getElementById("cat").value;
+  const sort = document.getElementById("sort").value;
+  
+  // フィルタリング
+  filteredItems = allItems.filter(item => {
+    // キーワード検索
+    if (query && !item.title.toLowerCase().includes(query) && 
+        !item.tags.some(tag => tag.toLowerCase().includes(query))) {
+      return false;
+    }
+    
+    // カテゴリ検索
+    if (category && item.category !== category) {
+      return false;
+    }
+    
+    // タグ検索
+    if (selectedTags.size > 0) {
+      const hasAllTags = Array.from(selectedTags).every(tag => 
+        item.tags.includes(tag)
+      );
+      if (!hasAllTags) return false;
+    }
+    
+    return true;
+  });
+  
+  // ソート
+  filteredItems.sort((a, b) => {
+    switch (sort) {
+      case "wdesc": return b.width - a.width;
+      case "wasc": return a.width - b.width;
+      default: return a.title.localeCompare(b.title);
+    }
+  });
+  
+  // 検索条件が変わったらページをリセット
+  currentPage = 1;
+  
+  // 結果表示
+  displayResults();
+}
+
+// 結果表示
+function displayResults() {
+  const grid = document.getElementById("grid");
+  const resultInfo = document.getElementById("resultInfo");
+  const resultText = document.getElementById("resultText");
+  const noResults = document.getElementById("noResults");
+  
+  if (filteredItems.length === 0) {
+    grid.innerHTML = "";
+    resultInfo.style.display = "none";
+    noResults.style.display = "block";
+    document.getElementById("pagination").style.display = "none";
+    return;
+  }
+  
+  noResults.style.display = "none";
+  resultInfo.style.display = "block";
+  
+  // 結果情報
+  const total = allItems.length;
+  const current = filteredItems.length;
+  
+  if (current === total) {
+    resultText.textContent = `全 ${total} 件の素材を表示中`;
+  } else {
+    resultText.textContent = `${total} 件中 ${current} 件を表示中`;
+  }
+  
+  // ページネーション計算
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredItems.length);
+  const pageItems = filteredItems.slice(startIndex, endIndex);
+  
+  // グリッド表示（現在のページの分のみ）
+  grid.innerHTML = pageItems.map(createCard).join("");
+  
+  // ページネーション更新
+  updatePagination();
+}
+
+// 初期化
+(async function(){
+  try {
+    const res = await fetch("assets.json");
+    const data = await res.json();
+    allItems = data.items || [];
+
+    // thumbnailPathをthumbプロパティとして設定
+    allItems = allItems.map(item => ({
+      ...item,
+      thumb: item.thumbnailPath
+    }));
+
+    filteredItems = [...allItems];
+
+    const cats = Array.from(new Set(allItems.map(x => x.category))).sort();
+    const tags = Array.from(new Set(allItems.flatMap(x => x.tags))).sort();
+
+    // 統計情報
+    document.getElementById("totalItems").textContent = allItems.length;
+    document.getElementById("totalCategories").textContent = cats.length;
+    document.getElementById("totalTags").textContent = tags.length;
+
+    // カテゴリ選択肢
+    const catSelect = document.getElementById("cat");
+    cats.forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat;
+      option.textContent = cat;
+      catSelect.appendChild(option);
+    });
+
+    // タグの使用頻度を計算
+    const tagFreq = {};
+    allItems.forEach(item => {
+      item.tags.forEach(tag => {
+        tagFreq[tag] = (tagFreq[tag] || 0) + 1;
+      });
+    });
+
+    // タグクラウド
+    const tagbar = document.getElementById("tagbar");
+    tags.forEach(tag => {
+      const freq = tagFreq[tag];
+      const btn = document.createElement("button");
+      btn.className = "btn btn-outline-secondary tag-item me-2 mb-2";
+      btn.textContent = tag;
+      btn.onclick = () => {
+        if (selectedTags.has(tag)) {
+          selectedTags.delete(tag);
+        } else {
+          selectedTags.add(tag);
+        }
+        updateSelectedTagsDisplay();
+        updateTagButtons();
+        performSearch();
+      };
+      tagbar.appendChild(btn);
+    });
+
+    // フッタータグ (人気順)
+    const footerTags = document.getElementById("footerTags");
+    const popularTags = Object.entries(tagFreq)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8);
+    
+    popularTags.forEach(([tag, count]) => {
+      const span = document.createElement("span");
+      span.className = "badge bg-secondary me-1 mb-1";
+      span.textContent = tag;
+      span.style.cursor = "pointer";
+      span.onclick = () => {
+        document.getElementById("q").value = tag;
+        performSearch();
+      };
+      footerTags.appendChild(span);
+    });
+
+    // タグ統計
+    document.getElementById("tagStats").textContent = `${tags.length}個のタグ`;
+
+    // イベントリスナー
+    document.getElementById("q").addEventListener("input", performSearch);
+    document.getElementById("cat").addEventListener("change", performSearch);
+    document.getElementById("sort").addEventListener("change", performSearch);
+    document.getElementById("itemsPerPageSelect").addEventListener("change", changeItemsPerPage);
+    document.getElementById("clearTags").addEventListener("click", () => {
+      selectedTags.clear();
+      updateSelectedTagsDisplay();
+      updateTagButtons();
+      performSearch();
+    });
+
+    // URLパラメータから検索クエリを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('q');
+    if (searchQuery) {
+      document.getElementById("q").value = searchQuery;
+    }
+
+    // 初期表示
+    performSearch();
+    
+  } catch (error) {
+    console.error("データの読み込みに失敗しました:", error);
+    document.getElementById("grid").innerHTML = '<div class="col-12 text-center"><p class="text-danger">データの読み込みに失敗しました。</p></div>';
+  }
+})();
+</script>
+
+</body>
+</html>

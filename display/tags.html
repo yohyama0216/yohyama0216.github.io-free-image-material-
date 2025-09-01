@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>タグ一覧 - やまさんのフリー素材屋</title>
+  <meta name="description" content="フリー画像素材のタグ一覧ページ。全てのタグとそれに紐づく素材の数を一覧表示します。">
+  <meta name="keywords" content="タグ一覧,フリー素材,検索,分類">
+  <meta name="author" content="やまさん">
+  <meta property="og:title" content="タグ一覧 - やまさんのフリー素材屋">
+  <meta property="og:description" content="フリー画像素材のタグ一覧ページ。全てのタグとそれに紐づく素材の数を一覧表示します。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yohyama0216.github.io/free-image-material/tags.html">
+  <meta property="og:image" content="https://yohyama0216.github.io/free-image-material/assets/og-image.jpg">
+  <link rel="canonical" href="https://yohyama0216.github.io/free-image-material/tags.html">
+  <link rel="icon" href="data:," />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+<!-- ナビゲーション -->
+<div id="nav-placeholder"></div>
+
+<!-- ヒーローセクション -->
+<section class="bg-primary text-white py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="display-4 fw-bold mb-3">🏷️ タグ一覧</h1>
+        <p class="lead mb-4">全てのタグとそれに紐づく素材の数を一覧表示します。タグをクリックして該当する素材を検索できます。</p>
+        <a href="./" class="btn btn-light btn-lg">
+          ← 素材一覧に戻る
+        </a>
+      </div>
+      <div class="col-lg-4 text-center">
+        <div class="bg-white bg-opacity-10 rounded p-4">
+          <h3 class="h5 mb-3">📊 タグ統計</h3>
+          <div class="row text-center">
+            <div class="col-6">
+              <div class="h4 fw-bold" id="totalTags">-</div>
+              <small>総タグ数</small>
+            </div>
+            <div class="col-6">
+              <div class="h4 fw-bold" id="totalItems">-</div>
+              <small>総素材数</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- メインコンテンツ -->
+<main class="py-4">
+  <div class="container">
+    <!-- 検索ボックス -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <input id="tagSearch" type="search" class="form-control form-control-lg" placeholder="タグ名を検索...">
+      </div>
+      <div class="col-md-3">
+        <select id="sortOrder" class="form-select form-select-lg">
+          <option value="alphabetical">アルファベット順</option>
+          <option value="count">素材数順</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <div class="form-check form-switch mt-2">
+          <input class="form-check-input" type="checkbox" id="hideEmpty">
+          <label class="form-check-label" for="hideEmpty">
+            0件のタグを非表示
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- タグリスト -->
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">全タグ一覧</h5>
+          <small id="displayCount" class="text-muted"></small>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th width="60%">タグ名</th>
+                <th width="20%" class="text-center">素材数</th>
+                <th width="20%" class="text-center">アクション</th>
+              </tr>
+            </thead>
+            <tbody id="tagList">
+              <!-- タグがここに動的に表示される -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- フッター -->
+<footer class="bg-dark text-white py-4 mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h5>やまさんのフリー素材屋</h5>
+        <p class="small mb-0">クリエイター向けのフリー画像素材を提供しています。</p>
+      </div>
+      <div class="col-md-4">
+        <h6>メニュー</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-light text-decoration-none small">About us</a></li>
+          <li><a href="#" class="text-light text-decoration-none small">Privacy policy</a></li>
+          <li><a href="#" class="text-light text-decoration-none small">Terms of Use</a></li>
+          <li><a href="#" class="text-light text-decoration-none small">BOOTH</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h6>人気タグ</h6>
+        <div id="footerTags" class="d-flex flex-wrap gap-1">
+          <!-- 人気タグがここに動的に表示される -->
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="text-center">
+      <small>&copy; やまさんのフリー素材屋｜無料の背景イラスト. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script>
+let allAssets = [];
+let allTags = [];
+
+// ページ読み込み時の初期化
+document.addEventListener('DOMContentLoaded', async function() {
+  await loadAssets();
+  setupEventListeners();
+  displayTags();
+  updateFooterTags();
+});
+
+// アセットデータの読み込み
+async function loadAssets() {
+  try {
+    const response = await fetch('assets.json');
+    allAssets = await response.json();
+    
+    // 全タグを収集（使用頻度も含む）
+    const tagMap = new Map();
+    
+    allAssets.forEach(asset => {
+      if (asset.tags && Array.isArray(asset.tags)) {
+        asset.tags.forEach(tag => {
+          tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
+        });
+      }
+    });
+    
+    // システムで定義されている全てのタグを追加（使用されていないものも含む）
+    const systemTags = [
+      'landscape', 'portrait', 'nature', 'building', 'character', 'object', 'ui', 'icon',
+      'background', 'texture', 'pattern', 'abstract', 'fantasy', 'sci-fi', 'medieval',
+      'modern', 'cute', 'cool', 'dark', 'bright', 'colorful', 'monochrome'
+    ];
+    
+    systemTags.forEach(tag => {
+      if (!tagMap.has(tag)) {
+        tagMap.set(tag, 0);
+      }
+    });
+    
+    // タグ配列を作成
+    allTags = Array.from(tagMap.entries()).map(([name, count]) => ({
+      name: name,
+      count: count
+    }));
+    
+  } catch (error) {
+    console.error('アセットの読み込みに失敗しました:', error);
+    allAssets = [];
+    allTags = [];
+  }
+}
+
+// イベントリスナーの設定
+function setupEventListeners() {
+  const tagSearch = document.getElementById('tagSearch');
+  const sortOrder = document.getElementById('sortOrder');
+  const hideEmpty = document.getElementById('hideEmpty');
+  
+  tagSearch.addEventListener('input', displayTags);
+  sortOrder.addEventListener('change', displayTags);
+  hideEmpty.addEventListener('change', displayTags);
+}
+
+// タグ表示
+function displayTags() {
+  const searchTerm = document.getElementById('tagSearch').value.toLowerCase();
+  const sortOrder = document.getElementById('sortOrder').value;
+  const hideEmpty = document.getElementById('hideEmpty').checked;
+  
+  let filteredTags = allTags.filter(tag => {
+    const matchesSearch = tag.name.toLowerCase().includes(searchTerm);
+    const shouldShow = !hideEmpty || tag.count > 0;
+    return matchesSearch && shouldShow;
+  });
+  
+  // ソート
+  if (sortOrder === 'alphabetical') {
+    filteredTags.sort((a, b) => a.name.localeCompare(b.name));
+  } else {
+    filteredTags.sort((a, b) => b.count - a.count);
+  }
+  
+  // 表示
+  const tagList = document.getElementById('tagList');
+  const displayCount = document.getElementById('displayCount');
+  
+  displayCount.textContent = `${filteredTags.length}件のタグ`;
+  
+  tagList.innerHTML = filteredTags.map(tag => `
+    <tr>
+      <td>
+        <span class="fw-medium">${tag.name}</span>
+      </td>
+      <td class="text-center">
+        <span class="badge ${tag.count > 0 ? 'bg-primary' : 'bg-secondary'}">${tag.count}</span>
+      </td>
+      <td class="text-center">
+        ${tag.count > 0 ? 
+          `<a href="index.html?tag=${encodeURIComponent(tag.name)}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-eye"></i> 表示
+          </a>` :
+          `<span class="text-muted small">素材なし</span>`
+        }
+      </td>
+    </tr>
+  `).join('');
+}
+
+// フッター用人気タグの更新
+function updateFooterTags() {
+  const popularTags = allTags
+    .filter(tag => tag.count > 0)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8);
+  
+  const footerTags = document.getElementById('footerTags');
+  footerTags.innerHTML = popularTags.map(tag => 
+    `<a href="index.html?tag=${encodeURIComponent(tag.name)}" class="btn btn-outline-light btn-sm">${tag.name}</a>`
+  ).join('');
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="includes/nav.js"></script>
+</body>
+</html>
