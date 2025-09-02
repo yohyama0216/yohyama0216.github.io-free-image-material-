@@ -5,9 +5,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Temporarily commented out for local testing
-  // basePath: '/yohyama0216.github.io-free-image-material-',
-  // assetPrefix: '/yohyama0216.github.io-free-image-material-/',
+  basePath: '/yohyama0216.github.io-free-image-material-',
+  assetPrefix: '/yohyama0216.github.io-free-image-material-/',
 }
 
 module.exports = nextConfig
