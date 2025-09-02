@@ -1,0 +1,149 @@
+{
+    "updatedAt": "2025-08-31T14:56:57+00:00",
+    "items": [
+        {
+            "id": "00012-468398885",
+            "title": "00012-468398885",
+            "category": "interior",
+            "tags": [
+                "interior"
+            ],
+            "description": "",
+            "license": "CC0-1.0",
+            "originalPath": "assets/interior/00012-468398885.png",
+            "thumbnailPath": "assets/_thumbs/00012-468398885_thumb.png",
+            "width": 960,
+            "height": 536,
+            "fileSize": 533696,
+            "slug": "00012-468398885",
+            "createdAt": "2024-01-25T14:47:36+00:00",
+            "updatedAt": "2024-01-25T14:47:36+00:00"
+        },
+        {
+            "id": "cuteroom1",
+            "title": "cuteroom1",
+            "category": "interior",
+            "tags": [
+                "interior"
+            ],
+            "description": "",
+            "license": "CC0-1.0",
+            "originalPath": "assets/interior/cuteroom1.jpg",
+            "thumbnailPath": "assets/_thumbs/cuteroom1_thumb.jpg",
+            "width": 1024,
+            "height": 576,
+            "fileSize": 173193,
+            "slug": "cuteroom1",
+            "createdAt": "2025-06-02T13:07:24+00:00",
+            "updatedAt": "2025-06-02T13:07:24+00:00"
+        },
+        {
+            "id": "arrow_pattern_large",
+            "title": "arrow_pattern_large",
+            "category": "pattern",
+            "tags": [
+                "pattern"
+            ],
+            "description": "",
+            "license": "CC0-1.0",
+            "originalPath": "assets/pattern/arrow_pattern_large.png",
+            "thumbnailPath": "assets/_thumbs/arrow_pattern_large_thumb.png",
+            "width": 1600,
+            "height": 1200,
+            "fileSize": 62631,
+            "slug": "arrow_pattern_large",
+            "createdAt": "2024-07-20T16:43:25+00:00",
+            "updatedAt": "2024-07-20T16:43:25+00:00"
+        },
+        {
+            "id": "geometric_pattern_random",
+            "title": "geometric_pattern_random",
+            "category": "pattern",
+            "tags": [
+                "pattern"
+            ],
+            "description": "",
+            "license": "CC0-1.0",
+            "originalPath": "assets/pattern/geometric_pattern_random.jpg",
+            "thumbnailPath": "assets/_thumbs/geometric_pattern_random_thumb.jpg",
+            "width": 1600,
+            "height": 1200,
+            "fileSize": 316935,
+            "slug": "geometric_pattern_random",
+            "createdAt": "2024-08-02T13:15:51+00:00",
+            "updatedAt": "2024-08-02T13:15:51+00:00"
+        },
+        {
+            "id": "tiled_hexagons_with_small_hexagons_1600x1200",
+            "title": "tiled_hexagons_with_small_hexagons_1600x1200",
+            "category": "pattern",
+            "tags": [
+                "pattern"
+            ],
+            "description": "",
+            "license": "CC0-1.0",
+            "originalPath": "assets/pattern/tiled_hexagons_with_small_hexagons_1600x1200.jpg",
+            "thumbnailPath": "assets/_thumbs/tiled_hexagons_with_small_hexagons_1600x1200_thumb.jpg",
+            "width": 1600,
+            "height": 1200,
+            "fileSize": 575554,
+            "slug": "tiled_hexagons_with_small_hexagons_1600x1200",
+            "createdAt": "2024-08-02T16:11:24+00:00",
+            "updatedAt": "2024-08-02T16:11:24+00:00"
+        },
+        {
+            "id": "tiled_hexagons_with_triangles_1600x1200",
+            "title": "tiled_hexagons_with_triangles_1600x1200",
+            "category": "pattern",
+            "tags": [
+                "pattern"
+            ],
+            "description": "",
+            "license": "CC0-1.0",
+            "originalPath": "assets/pattern/tiled_hexagons_with_triangles_1600x1200.jpg",
+            "thumbnailPath": "assets/_thumbs/tiled_hexagons_with_triangles_1600x1200_thumb.jpg",
+            "width": 1600,
+            "height": 1200,
+            "fileSize": 547774,
+            "slug": "tiled_hexagons_with_triangles_1600x1200",
+            "createdAt": "2024-08-02T16:37:55+00:00",
+            "updatedAt": "2024-08-02T16:37:55+00:00"
+        },
+        {
+            "id": "trimmed_pattern-8",
+            "title": "trimmed_pattern (8)",
+            "category": "pattern",
+            "tags": [
+                "pattern"
+            ],
+            "description": "",
+            "license": "CC0-1.0",
+            "originalPath": "assets/pattern/trimmed_pattern (8).jpg",
+            "thumbnailPath": "assets/_thumbs/trimmed_pattern (8)_thumb.jpg",
+            "width": 1600,
+            "height": 1200,
+            "fileSize": 85757,
+            "slug": "trimmed_pattern-8",
+            "createdAt": "2024-08-02T10:40:27+00:00",
+            "updatedAt": "2024-08-02T10:40:27+00:00"
+        },
+        {
+            "id": "trimmed_pattern",
+            "title": "trimmed_pattern",
+            "category": "pattern",
+            "tags": [
+                "pattern"
+            ],
+            "description": "",
+            "license": "CC0-1.0",
+            "originalPath": "assets/pattern/trimmed_pattern.jpg",
+            "thumbnailPath": "assets/_thumbs/trimmed_pattern_thumb.jpg",
+            "width": 1600,
+            "height": 1200,
+            "fileSize": 69778,
+            "slug": "trimmed_pattern",
+            "createdAt": "2024-08-02T10:35:40+00:00",
+            "updatedAt": "2024-08-02T10:35:40+00:00"
+        }
+    ]
+}

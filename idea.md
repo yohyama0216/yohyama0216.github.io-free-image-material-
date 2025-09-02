@@ -1,4 +1,8 @@
-# 💡 やまさんのフリー素材屋 改善提案
+# 💡 やまさんのフリー素材#### 1. メタデータURL修正
+- [x] OGPのURLを正しいものに修正
+- [x] Canonical URLの修正
+- [x] Twitter Cardの画像URLも確認
+- [x] GitHub Actions ワークフローの修正提案
 
 ## 📊 現状分析
 
@@ -14,9 +18,9 @@
 ### 🔥 高優先度
 
 #### 1. メタデータURL修正
-- [ ] OGPのURLを正しいものに修正
-- [ ] Canonical URLの修正
-- [ ] Twitter Cardの画像URLも確認
+- [x] OGPのURLを正しいものに修正
+- [x] Canonical URLの修正
+- [x] Twitter Cardの画像URLも確認
 
 **現在の問題:**
 ```html
