@@ -9,9 +9,9 @@ const HomePage = () => {
       id: "cuteroom1",
       title: "かわいい部屋 1",
       description: "温かみのあるかわいい部屋の風景",
-      category: "風景",
-      thumbnailUrl: "/assets/landscape/cuteroom1.jpg",
-      downloadUrl: "/assets/landscape/cuteroom1.jpg",
+      category: "interior",
+      thumbnailUrl: "./assets/_thumbs/cuteroom1_thumb.jpg",
+      downloadUrl: "./assets/interior/cuteroom1.jpg",
       filename: "cuteroom1.jpg"
     }
   ];

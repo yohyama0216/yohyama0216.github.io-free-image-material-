@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import OptimizedImage from './OptimizedImage';
 
 const MaterialCard = ({ material }) => {
   const downloadImage = (url, filename) => {
@@ -15,11 +16,12 @@ const MaterialCard = ({ material }) => {
     <div className="col-md-6 col-lg-4 mb-4">
       <div className="card h-100 shadow-sm">
         <Link href={`/materials/${material.id}`} className="text-decoration-none">
-          <img 
+          <OptimizedImage 
             src={material.thumbnailUrl} 
             className="card-img-top" 
             alt={material.title}
             style={{ height: '200px', objectFit: 'cover' }}
+            loading="lazy"
           />
         </Link>
         <div className="card-body d-flex flex-column">

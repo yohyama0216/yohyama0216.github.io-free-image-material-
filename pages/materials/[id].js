@@ -2,6 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Layout from '../../components/Layout';
+import OptimizedImage from '../../components/OptimizedImage';
 
 const MaterialDetailPage = ({ material, relatedMaterials }) => {
   return (
@@ -42,7 +43,7 @@ const MaterialDetailPage = ({ material, relatedMaterials }) => {
               <div className="col-lg-8">
                 <div className="card shadow-sm">
                   <div className="card-body">
-                    <img 
+                    <OptimizedImage 
                       src={material.originalPath} 
                       alt={material.title} 
                       className="img-fluid rounded mb-3" 
@@ -52,6 +53,7 @@ const MaterialDetailPage = ({ material, relatedMaterials }) => {
                         objectFit: 'contain', 
                         backgroundColor: '#f8f9fa' 
                       }}
+                      priority={true}
                     />
                     
                     {/* ダウンロードボタン */}
@@ -139,11 +141,12 @@ const MaterialDetailPage = ({ material, relatedMaterials }) => {
                             <Link href={`/materials/${relatedMaterial.id}`} className="text-decoration-none">
                               <div className="card h-100 border-0 shadow-sm">
                                 <div className="position-relative">
-                                  <img 
+                                  <OptimizedImage 
                                     src={relatedMaterial.thumbnailPath} 
                                     className="card-img-top" 
                                     style={{ height: '120px', objectFit: 'cover' }}
                                     alt={relatedMaterial.title}
+                                    loading="lazy"
                                   />
                                   <div className="position-absolute top-0 end-0 m-2">
                                     <span className="badge bg-primary small">{relatedMaterial.category}</span>
@@ -200,12 +203,12 @@ export async function getStaticProps({ params }) {
       id: 'cuteroom1',
       title: 'かわいい部屋 1',
       description: '温かみのあるかわいい部屋の風景。リビングスペースにソファとテーブルが配置され、暖色系の照明が心地よい雰囲気を演出しています。',
-      category: '風景',
-      originalPath: '/assets/landscape/cuteroom1.jpg',
-      thumbnailPath: '/assets/landscape/cuteroom1.jpg',
+      category: 'interior',
+      originalPath: './assets/interior/cuteroom1.jpg',
+      thumbnailPath: './assets/_thumbs/cuteroom1_thumb.jpg',
       filename: 'cuteroom1.jpg',
-      width: 1920,
-      height: 1080,
+      width: 1024,
+      height: 576,
       format: 'JPEG',
       license: 'CC0',
       tags: ['部屋', 'インテリア', '風景', 'かわいい', 'リビング', '家具']
@@ -225,8 +228,8 @@ export async function getStaticProps({ params }) {
     {
       id: 'cuteroom1',
       title: 'かわいい部屋 1',
-      category: '風景',
-      thumbnailPath: '/assets/landscape/cuteroom1.jpg'
+      category: 'interior',
+      thumbnailPath: './assets/_thumbs/cuteroom1_thumb.jpg'
     }
   ];
 
