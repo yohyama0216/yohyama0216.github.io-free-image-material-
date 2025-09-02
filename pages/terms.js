@@ -1,5 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 import Layout from '../components/Layout';
 
 const TermsPage = () => {
@@ -136,7 +137,7 @@ const TermsPage = () => {
                 {/* プライバシーについて */}
                 <div className="mb-5">
                   <h3 className="text-success pb-2 border-bottom border-2">プライバシーについて</h3>
-                  <p>当サイトのプライバシーポリシーについては、<a href="/privacy-policy" className="text-decoration-none">プライバシーポリシーページ</a>をご確認ください。</p>
+                  <p>当サイトのプライバシーポリシーについては、<Link href="/privacy-policy" className="text-decoration-none">プライバシーポリシーページ</Link>をご確認ください。</p>
                 </div>
 
                 {/* 規約の変更 */}

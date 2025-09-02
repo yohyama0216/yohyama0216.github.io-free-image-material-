@@ -1,5 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 import Layout from '../../components/Layout';
 
 const MaterialDetailPage = ({ material, relatedMaterials }) => {
@@ -27,10 +28,10 @@ const MaterialDetailPage = ({ material, relatedMaterials }) => {
             <nav aria-label="breadcrumb" className="mb-4">
               <ol className="breadcrumb">
                 <li className="breadcrumb-item">
-                  <a href="/" className="text-decoration-none">ホーム</a>
+                  <Link href="/" className="text-decoration-none">ホーム</Link>
                 </li>
                 <li className="breadcrumb-item">
-                  <a href={`/?category=${material.category}`} className="text-decoration-none">{material.category}</a>
+                  <Link href={`/?category=${material.category}`} className="text-decoration-none">{material.category}</Link>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">{material.title}</li>
               </ol>
@@ -135,7 +136,7 @@ const MaterialDetailPage = ({ material, relatedMaterials }) => {
                       <div className="row g-3">
                         {relatedMaterials.map((relatedMaterial) => (
                           <div key={relatedMaterial.id} className="col-lg-6 col-md-4">
-                            <a href={`/materials/${relatedMaterial.id}`} className="text-decoration-none">
+                            <Link href={`/materials/${relatedMaterial.id}`} className="text-decoration-none">
                               <div className="card h-100 border-0 shadow-sm">
                                 <div className="position-relative">
                                   <img 
@@ -153,7 +154,7 @@ const MaterialDetailPage = ({ material, relatedMaterials }) => {
                                   <small className="text-muted">{relatedMaterial.category}</small>
                                 </div>
                               </div>
-                            </a>
+                            </Link>
                           </div>
                         ))}
                       </div>
@@ -161,9 +162,9 @@ const MaterialDetailPage = ({ material, relatedMaterials }) => {
                       <div className="text-center py-4">
                         <i className="fas fa-search text-muted" style={{ fontSize: '2rem' }}></i>
                         <p className="text-muted mt-2 mb-0">関連する素材はありません</p>
-                        <a href="/" className="btn btn-outline-primary btn-sm mt-2">
+                        <Link href="/" className="btn btn-outline-primary btn-sm mt-2">
                           すべての素材を見る
-                        </a>
+                        </Link>
                       </div>
                     )}
                   </div>

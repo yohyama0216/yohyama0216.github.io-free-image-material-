@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 const MaterialCard = ({ material }) => {
   const downloadImage = (url, filename) => {
@@ -13,19 +14,19 @@ const MaterialCard = ({ material }) => {
   return (
     <div className="col-md-6 col-lg-4 mb-4">
       <div className="card h-100 shadow-sm">
-        <a href={`/materials/${material.id}`} className="text-decoration-none">
+        <Link href={`/materials/${material.id}`} className="text-decoration-none">
           <img 
             src={material.thumbnailUrl} 
             className="card-img-top" 
             alt={material.title}
             style={{ height: '200px', objectFit: 'cover' }}
           />
-        </a>
+        </Link>
         <div className="card-body d-flex flex-column">
           <h5 className="card-title">
-            <a href={`/materials/${material.id}`} className="text-decoration-none text-dark">
+            <Link href={`/materials/${material.id}`} className="text-decoration-none text-dark">
               {material.title}
-            </a>
+            </Link>
           </h5>
           <p className="card-text text-muted flex-grow-1">{material.description}</p>
           <div className="d-flex justify-content-between align-items-center">

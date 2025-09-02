@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 import Layout from '../components/Layout';
 
 const TagsPage = () => {
@@ -63,9 +64,9 @@ const TagsPage = () => {
                 <p className="lead mb-4">
                   全てのタグとそれに紐づく素材の数を一覧表示します。タグをクリックして該当する素材を検索できます。
                 </p>
-                <a href="/" className="btn btn-light btn-lg">
+                <Link href="/" className="btn btn-light btn-lg">
                   ← ホームに戻る
-                </a>
+                </Link>
               </div>
               <div className="col-lg-4 text-center">
                 <div className="bg-white bg-opacity-10 rounded p-4">
@@ -234,14 +235,14 @@ const TagsPage = () => {
             <div className="row mt-5">
               <div className="col-12 text-center">
                 <div className="d-flex flex-wrap gap-3 justify-content-center">
-                  <a href="/list" className="btn btn-primary btn-lg">
+                  <Link href="/list" className="btn btn-primary btn-lg">
                     <i className="fas fa-th me-2"></i>
                     素材一覧を見る
-                  </a>
-                  <a href="/" className="btn btn-outline-primary btn-lg">
+                  </Link>
+                  <Link href="/" className="btn btn-outline-primary btn-lg">
                     <i className="fas fa-home me-2"></i>
                     ホームに戻る
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
