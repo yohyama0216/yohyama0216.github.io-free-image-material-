@@ -5,6 +5,31 @@ import Layout from '../../components/Layout';
 import OptimizedImage from '../../components/OptimizedImage';
 
 const MaterialDetailPage = ({ material, relatedMaterials }) => {
+  // GitHub Pages の basePath
+  const basePath = '/yohyama0216.github.io-free-image-material-';
+
+  // パスを正規化する関数
+  const normalizePath = (path) => {
+    if (!path) return path;
+    
+    // ./で始まる相対パスの場合
+    if (path.startsWith('./')) {
+      return basePath + '/' + path.substring(2);
+    }
+    
+    // /で始まる絶対パスの場合
+    if (path.startsWith('/') && !path.startsWith(basePath)) {
+      return basePath + path;
+    }
+    
+    // basePathが既に含まれている場合
+    if (path.startsWith(basePath)) {
+      return path;
+    }
+    
+    // その他の場合
+    return basePath + '/' + path;
+  };
   return (
     <>
       <Head>
@@ -59,7 +84,7 @@ const MaterialDetailPage = ({ material, relatedMaterials }) => {
                     {/* ダウンロードボタン */}
                     <div className="d-grid gap-2 d-md-flex justify-content-md-end">
                       <a 
-                        href={material.originalPath} 
+                        href={normalizePath(material.originalPath)} 
                         download={material.filename} 
                         className="btn btn-primary btn-lg"
                       >

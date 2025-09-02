@@ -3,9 +3,35 @@ import Link from 'next/link';
 import OptimizedImage from './OptimizedImage';
 
 const MaterialCard = ({ material }) => {
+  // GitHub Pages の basePath
+  const basePath = '/yohyama0216.github.io-free-image-material-';
+
+  // パスを正規化する関数
+  const normalizePath = (path) => {
+    if (!path) return path;
+    
+    // ./で始まる相対パスの場合
+    if (path.startsWith('./')) {
+      return basePath + '/' + path.substring(2);
+    }
+    
+    // /で始まる絶対パスの場合
+    if (path.startsWith('/') && !path.startsWith(basePath)) {
+      return basePath + path;
+    }
+    
+    // basePathが既に含まれている場合
+    if (path.startsWith(basePath)) {
+      return path;
+    }
+    
+    // その他の場合
+    return basePath + '/' + path;
+  };
+
   const downloadImage = (url, filename) => {
     const link = document.createElement('a');
-    link.href = url;
+    link.href = normalizePath(url);
     link.download = filename;
     document.body.appendChild(link);
     link.click();
