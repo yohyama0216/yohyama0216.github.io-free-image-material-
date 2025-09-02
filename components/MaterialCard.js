@@ -32,13 +32,13 @@ const MaterialCard = ({ material }) => {
           <div className="d-flex justify-content-between align-items-center">
             <small className="text-muted">{material.category}</small>
             <div className="btn-group">
-              <a 
+              <Link 
                 href={`/materials/${material.id}`}
-                className="btn btn-outline-primary btn-sm"
+                className="btn btn-outline-primary btn-sm text-decoration-none"
               >
                 <i className="fas fa-eye me-1"></i>
                 詳細
-              </a>
+              </Link>
               <button 
                 className="btn btn-primary btn-sm"
                 onClick={() => downloadImage(material.downloadUrl, material.filename)}

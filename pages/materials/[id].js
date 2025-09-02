@@ -91,13 +91,13 @@ const MaterialDetailPage = ({ material, relatedMaterials }) => {
                       <h6 className="fw-semibold text-muted">タグ</h6>
                       <div className="d-flex flex-wrap gap-1">
                         {material.tags.map((tag, index) => (
-                          <a 
+                          <Link 
                             key={index}
                             href={`/?tag=${tag}`} 
                             className="badge bg-light text-dark text-decoration-none"
                           >
                             {tag}
-                          </a>
+                          </Link>
                         ))}
                       </div>
                     </div>
@@ -127,7 +127,7 @@ const MaterialDetailPage = ({ material, relatedMaterials }) => {
                 <div className="card shadow-sm mt-4">
                   <div className="card-header d-flex justify-content-between align-items-center">
                     <h6 className="mb-0">
-                      <i className="fas fa-th"></i> 関連する素材
+                      <i className="fas fa-th-large"></i> 関連する素材
                     </h6>
                     <small className="text-muted">タグ・カテゴリが類似する素材</small>
                   </div>
@@ -135,7 +135,7 @@ const MaterialDetailPage = ({ material, relatedMaterials }) => {
                     {relatedMaterials && relatedMaterials.length > 0 ? (
                       <div className="row g-3">
                         {relatedMaterials.map((relatedMaterial) => (
-                          <div key={relatedMaterial.id} className="col-lg-6 col-md-4">
+                          <div key={relatedMaterial.id} className="col-lg-4 col-md-6">
                             <Link href={`/materials/${relatedMaterial.id}`} className="text-decoration-none">
                               <div className="card h-100 border-0 shadow-sm">
                                 <div className="position-relative">
