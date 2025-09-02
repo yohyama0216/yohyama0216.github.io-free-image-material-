@@ -18,7 +18,3 @@ Thumbs.db
 *.bak
 *backup*
 *-new.*
-
-# GitHub Actions (temporary - workflow scope issue)
-.github/workflows/
-*-utf8.*
