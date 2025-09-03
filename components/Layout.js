@@ -4,7 +4,7 @@ import Link from 'next/link';
 const Layout = ({ children }) => {
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
           <Link href="/" className="navbar-brand text-decoration-none">
             <i className="fas fa-image me-2"></i>
